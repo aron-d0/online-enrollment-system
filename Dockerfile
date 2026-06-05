@@ -16,7 +16,6 @@ RUN npm install
 RUN npm run build
 
 RUN mkdir -p database
-RUN touch database/database.sqlite
 
 EXPOSE 8000
 
