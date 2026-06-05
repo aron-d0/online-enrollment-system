@@ -1,49 +1,140 @@
 <x-layout title="Student Management">
-    <h1>Student Management</h1>
 
-    <button onclick="history.back()">
-        ← Back
-    </button>
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
 
-    <br><br>
+        <div>
 
-    <table border="1" cellpadding="8">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full
+            bg-blue-500/10 border border-blue-500/20 text-blue-300 text-sm">
 
-        <tr>
-            <th>Student Number</th>
-            <th>Name</th>
-            <th>Course</th>
-            <th>Year Level</th>
-            <th>Email</th>
-        </tr>
+                <i class="fa-solid fa-user-graduate"></i>
+                Student Records
 
-        @foreach($students as $student)
+            </div>
 
-            <tr>
+            <h1 class="mt-4 text-5xl font-bold text-white">
+                Students
+            </h1>
 
-                <td>
-                    {{ $student->student_number }}
-                </td>
+            <p class="mt-2 text-slate-400">
+                Manage enrolled student information and academic records
+            </p>
 
-                <td>
-                    {{ $student->user->name }}
-                </td>
+        </div>
 
-                <td>
-                    {{ $student->course }}
-                </td>
+        <div class="mt-4 md:mt-0">
 
-                <td>
-                    {{ $student->year_level }}
-                </td>
+            <div class="bg-white/5 backdrop-blur-xl border border-white/10
+            rounded-3xl px-6 py-4">
 
-                <td>
-                    {{ $student->user->email }}
-                </td>
+                <p class="text-slate-400 text-sm">
+                    Total Students
+                </p>
 
-            </tr>
+                <h2 class="text-3xl font-bold text-white">
+                    {{ $students->count() }}
+                </h2>
 
-        @endforeach
+            </div>
 
-    </table>
+        </div>
+
+    </div>
+
+    <!-- Student Table -->
+    <div class="overflow-hidden rounded-[32px]
+    bg-white/5 backdrop-blur-2xl
+    border border-white/10
+    shadow-[0_20px_60px_rgba(0,0,0,.35)]">
+
+        <table class="w-full">
+
+            <thead>
+
+                <tr class="border-b border-white/10">
+
+                    <th class="px-6 py-5 text-left text-slate-400 font-medium">
+                        Student Number
+                    </th>
+
+                    <th class="px-6 py-5 text-left text-slate-400 font-medium">
+                        Name
+                    </th>
+
+                    <th class="px-6 py-5 text-left text-slate-400 font-medium">
+                        Course
+                    </th>
+
+                    <th class="px-6 py-5 text-left text-slate-400 font-medium">
+                        Year
+                    </th>
+
+                    <th class="px-6 py-5 text-left text-slate-400 font-medium">
+                        Email
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @foreach($students as $student)
+
+                    <tr class="border-b border-white/5 hover:bg-white/5 transition">
+
+                        <td class="px-6 py-5 text-slate-300">
+                            {{ $student->student_number }}
+                        </td>
+
+                        <td class="px-6 py-5">
+
+                            <div class="flex items-center gap-3">
+
+                                <div class="w-10 h-10 rounded-full
+                                    bg-blue-500/20 flex items-center justify-center">
+
+                                    <i class="fa-solid fa-user text-blue-400"></i>
+
+                                </div>
+
+                                <span class="text-white font-medium">
+                                    {{ $student->user->name }}
+                                </span>
+
+                            </div>
+
+                        </td>
+
+                        <td class="px-6 py-5 text-slate-300">
+                            {{ $student->course }}
+                        </td>
+
+                        <td class="px-6 py-5">
+
+                            <span class="px-3 py-1 rounded-full
+                                bg-cyan-500/10 border border-cyan-500/20
+                                text-cyan-300 text-sm">
+
+                                {{ $student->year_level }}
+
+                            </span>
+
+                        </td>
+
+                        <td class="px-6 py-5 text-slate-300">
+                            {{ $student->user->email }}
+                        </td>
+
+                    </tr>
+
+                @endforeach
+
+            </tbody>
+
+        </table>
+
+    </div>
+
 </x-layout>

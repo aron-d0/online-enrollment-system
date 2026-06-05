@@ -1,125 +1,149 @@
 <x-layout title="Create Subject">
 
-    <h1>Create Subject</h1>
+    <div class="max-w-5xl mx-auto">
 
-    <button type="button" onclick="window.location='{{ route('subjects.index') }}'">
+        <div class="mb-8">
 
-        ← Back
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full
+            bg-blue-500/10 border border-blue-500/20 text-blue-300 text-sm">
 
-    </button>
+                <i class="fa-solid fa-book-medical"></i>
+                Subject Management
 
-    <br><br>
+            </div>
 
-    <form action="{{ route('subjects.store') }}" method="POST">
+            <h1 class="mt-4 text-5xl font-bold text-white">
+                Create Subject
+            </h1>
 
-        @csrf
-
-        <table>
-
-            <tr>
-                <th>Field</th>
-                <th>Value</th>
-            </tr>
-
-            <tr>
-                <td style="width:180px;">Section:</td>
-                <td>
-
-                    <select name="section_id" required style="width:100%; box-sizing:border-box;">
-
-                        @foreach($sections as $section)
-
-                            <option value="{{ $section->id }}">
-                                {{ $section->name }}
-                            </option>
-
-                        @endforeach
-
-                    </select>
-
-                </td>
-            </tr>
-
-            <tr>
-                <td>Code:</td>
-                <td>
-
-                    <input type="text" name="code" placeholder="Ex. LN01_ELEC1" required
-                        style="width:100%; box-sizing:border-box;">
-
-                </td>
-            </tr>
-
-            <tr>
-                <td>Title:</td>
-                <td>
-
-                    <input type="text" name="title" placeholder="Ex. Web Systems and Technologies 2" required
-                        style="width:100%; box-sizing:border-box;">
-
-                </td>
-            </tr>
-
-            <tr>
-                <td>Units:</td>
-                <td>
-
-                    <input type="number" name="units" min="1" placeholder="Ex. 3" required
-                        style="width:100%; box-sizing:border-box;">
-
-                </td>
-            </tr>
-
-            <tr>
-                <td>Days:</td>
-                <td>
-
-                    <input type="text" name="days" placeholder="Ex. MWF" style="width:100%; box-sizing:border-box;">
-
-                </td>
-            </tr>
-
-            <tr>
-                <td>Time From:</td>
-                <td>
-
-                    <input type="time" name="time_from" style="width:100%; box-sizing:border-box;">
-
-                </td>
-            </tr>
-
-            <tr>
-                <td>Time To:</td>
-                <td>
-
-                    <input type="time" name="time_to" style="width:100%; box-sizing:border-box;">
-
-                </td>
-            </tr>
-
-            <tr>
-                <td>Room:</td>
-                <td>
-
-                    <input type="text" name="room" placeholder="Ex. ITRM 3" style="width:100%; box-sizing:border-box;">
-
-                </td>
-            </tr>
-
-        </table>
-
-        <br>
-
-        <div style="text-align:right;">
-
-            <button type="submit">
-
-                Save Subject
-
-            </button>
+            <p class="mt-2 text-slate-400">
+                Add a new subject to the enrollment system
+            </p>
 
         </div>
 
-    </form>
+        <div class="bg-white/5 backdrop-blur-2xl
+        border border-white/10
+        rounded-[32px]
+        p-8 shadow-[0_20px_60px_rgba(0,0,0,.25)]">
+
+            <form action="{{ route('subjects.store') }}" method="POST">
+
+                @csrf
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <div>
+                        <label class="block text-slate-300 mb-2">
+                            Section
+                        </label>
+
+                        <select name="section_id" required class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
+                            text-white px-4 py-3">
+
+                            @foreach($sections as $section)
+
+                                <option value="{{ $section->id }}">
+                                    {{ $section->name }}
+                                </option>
+
+                            @endforeach
+
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-300 mb-2">
+                            Subject Code
+                        </label>
+
+                        <input type="text" name="code" placeholder="LN01_ELEC1" required class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
+                            text-white px-4 py-3">
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-300 mb-2">
+                            Subject Title
+                        </label>
+
+                        <input type="text" name="title" placeholder="Web Systems and Technologies 2" required class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
+                            text-white px-4 py-3">
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-300 mb-2">
+                            Units
+                        </label>
+
+                        <input type="number" name="units" min="1" placeholder="3" required class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
+                            text-white px-4 py-3">
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-300 mb-2">
+                            Days
+                        </label>
+
+                        <input type="text" name="days" placeholder="MWF" class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
+                            text-white px-4 py-3">
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-300 mb-2">
+                            Room
+                        </label>
+
+                        <input type="text" name="room" placeholder="ITRM 3" class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
+                            text-white px-4 py-3">
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-300 mb-2">
+                            Time From
+                        </label>
+
+                        <input type="time" name="time_from" class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
+                            text-white px-4 py-3">
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-300 mb-2">
+                            Time To
+                        </label>
+
+                        <input type="time" name="time_to" class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
+                            text-white px-4 py-3">
+                    </div>
+
+                </div>
+
+                <div class="flex justify-between items-center mt-10">
+
+                    <a href="{{ route('subjects.index') }}" class="px-5 py-3 rounded-2xl
+                        bg-slate-800 border border-slate-700
+                        text-slate-300 hover:bg-slate-700 transition">
+
+                        <i class="fa-solid fa-arrow-left mr-2"></i>
+                        Back
+
+                    </a>
+
+                    <button type="submit" class="px-6 py-3 rounded-2xl
+                        bg-blue-500/20 border border-blue-500/20
+                        text-blue-300 hover:bg-blue-500/30
+                        transition-all duration-200 hover:scale-105">
+
+                        <i class="fa-solid fa-floppy-disk mr-2"></i>
+                        Save Subject
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
 
 </x-layout>

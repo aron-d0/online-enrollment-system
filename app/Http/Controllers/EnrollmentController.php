@@ -67,48 +67,20 @@ class EnrollmentController extends Controller
                 'Enrollment completed successfully.'
             );
     }
-    // public function adminStore(Request $request)
+    // public function reset($studentId)
     // {
-    //     $student = Student::findOrFail(
-    //         $request->student_id
-    //     );
-
-    //     $subjectIds = $request->subjects ?? [];
-
-    //     foreach ($subjectIds as $subjectId) {
-
-    //         Enrollment::firstOrCreate(
-    //             [
-    //                 'student_id' => $student->id,
-    //                 'subject_id' => $subjectId,
-    //             ],
-    //             [
-    //                 'status' => 'Pending'
-    //             ]
-    //         );
-    //     }
+    //     Enrollment::where(
+    //         'student_id',
+    //         $studentId
+    //     )->delete();
 
     //     return redirect()
     //         ->route('enrollments.index')
     //         ->with(
     //             'success',
-    //             'Student enrolled successfully.'
+    //             'Enrollment reset successfully.'
     //         );
     // }
-    public function reset($studentId)
-    {
-        Enrollment::where(
-            'student_id',
-            $studentId
-        )->delete();
-
-        return redirect()
-            ->route('enrollments.index')
-            ->with(
-                'success',
-                'Enrollment reset successfully.'
-            );
-    }
     public function exportJson()
     {
         $enrollments = Enrollment::with([
@@ -192,7 +164,10 @@ class EnrollmentController extends Controller
             'status' => 'Approved'
         ]);
 
-        return back();
+        return back()->with(
+            'success',
+            'Enrollment approved successfully.'
+        );
     }
 
     public function reject(Enrollment $enrollment)
@@ -201,6 +176,18 @@ class EnrollmentController extends Controller
             'status' => 'Rejected'
         ]);
 
-        return back();
+        return back()->with(
+            'success',
+            'Enrollment rejected successfully.'
+        );
+    }
+    public function destroy(Enrollment $enrollment)
+    {
+        $enrollment->delete();
+
+        return back()->with(
+            'success',
+            'Enrollment deleted successfully.'
+        );
     }
 }

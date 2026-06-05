@@ -47,9 +47,9 @@ Route::middleware('auth')->group(function () {
         )->name('enrollments.index');
 
         Route::delete(
-            '/admin/enrollments/reset/{student}',
-            [EnrollmentController::class, 'reset']
-        )->name('enrollments.reset');
+            '/admin/enrollments/{enrollment}',
+            [EnrollmentController::class, 'destroy']
+        )->name('enrollments.destroy');
 
         // Route::get(
         //     '/admin/manual-enrollment',

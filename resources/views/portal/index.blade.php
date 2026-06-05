@@ -1,202 +1,463 @@
 <x-layout title="Student Portal">
+@if(session('success'))
 
-    @if(session('success'))
-        <p>
-            <strong>{{ session('success') }}</strong>
-        </p>
-    @endif
+    <div class="mb-6 p-4 rounded-2xl
+    bg-emerald-500/10 border border-emerald-500/20
+    text-emerald-300">
 
-    <h3>Student Information</h3>
+        <i class="fa-solid fa-circle-check mr-2"></i>
 
-    @if($isEnrolled)
-
-        <p>
-            <strong>Status:</strong>
-            ENROLLED
-        </p>
-
-    @else
-
-        <p>
-            <strong>Status:</strong>
-            NOT ENROLLED
-        </p>
-
-    @endif
-
-    <p>
-        <strong>Student Number:</strong>
-        {{ $student->student_number }}
-    </p>
-
-    <p>
-        <strong>Name:</strong>
-        {{ auth()->user()->name }}
-    </p>
-
-    <p>
-        <strong>Course:</strong>
-        {{ $student->course }}
-    </p>
-
-    <p>
-        <strong>Year Level:</strong>
-        {{ $student->year_level }}
-    </p>
-
-    <br><hr>
-
-    <h3>Current Enrolled Subjects</h3>
-
-    <table border="1" cellpadding="8">
-
-        <tr>
-            <th>CODE</th>
-            <th>SUBJECT</th>
-            <th>UNITS</th>
-            <th>FROM</th>
-            <th>TO</th>
-            <th>DAYS</th>
-            <th>ROOM</th>
-            <th>STATUS</th>
-        </tr>
-
-        @foreach($enrollments as $enrollment)
-
-            <tr>
-
-                <td>{{ $enrollment->subject->code }}</td>
-                <td>{{ $enrollment->subject->title }}</td>
-                <td>{{ $enrollment->subject->units }}</td>
-                <td>{{ $enrollment->subject->time_from }}</td>
-                <td>{{ $enrollment->subject->time_to }}</td>
-                <td>{{ $enrollment->subject->days }}</td>
-                <td>{{ $enrollment->subject->room }}</td>
-                <td>{{ $enrollment->status }}</td>
-
-            </tr>
-
-        @endforeach
-
-    </table>
-
-    <br>
-    <hr>
-
-    <div style="text-align:center;">
-
-        <form method="GET" action="{{ route('portal') }}">
-
-            <label>Select Section</label>
-
-            <select name="section_id">
-
-                <option value="">
-                    -- Select Section --
-                </option>
-
-                @foreach($sections as $section)
-
-                    <option value="{{ $section->id }}" {{ request('section_id') == $section->id ? 'selected' : '' }}>
-                        {{ $section->name }}
-                    </option>
-
-                @endforeach
-
-            </select>
-
-            <button type="submit">
-                Load Subjects
-            </button>
-
-        </form>
+        {{ session('success') }}
 
     </div>
 
-    <br>
+@endif
 
-    <form method="POST" action="{{ route('enroll.store') }}">
+<!-- Header -->
 
-        @csrf
+<div class="mb-8">
 
-        <input type="hidden" name="section_id" value="{{ request('section_id') }}">
+    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full
+    bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-sm">
 
-        <table border="1" cellpadding="8">
+        <i class="fa-solid fa-user-graduate"></i>
+        Student Portal
 
-            <tr>
-                <th>STAT</th>
-                <th>CODE</th>
-                <th>SUBJECT</th>
-                <th>UNITS</th>
-                <th>FROM</th>
-                <th>TO</th>
-                <th>DAYS</th>
-                <th>ROOM</th>
-            </tr>
+    </div>
 
-            @foreach($subjects as $subject)
+    <h1 class="mt-4 text-5xl font-bold text-white">
+        Enrollment Portal
+    </h1>
 
-                <tr>
+    <p class="mt-2 text-slate-400">
+        Welcome back, {{ auth()->user()->name }}
+    </p>
 
-                    <td>
-                        <input type="checkbox" name="subjects[]" value="{{ $subject->id }}" checked {{ $isEnrolled ? 'disabled' : '' }}>
-                    </td>
+</div>
 
-                    <td>
-                        {{ $subject->code }}
-                    </td>
+<!-- Student Information -->
 
-                    <td>
-                        {{ $subject->title }}
-                    </td>
+<div class="bg-white/5 backdrop-blur-2xl border border-white/10
+rounded-[32px] p-8 mb-8">
 
-                    <td>
-                        {{ $subject->units }}
-                    </td>
+    <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-6">
 
-                    <td>
-                        {{ $subject->time_from }}
-                    </td>
+        <div>
 
-                    <td>
-                        {{ $subject->time_to }}
-                    </td>
+            <h2 class="text-2xl font-bold text-white mb-4">
+                Student Information
+            </h2>
 
-                    <td>
-                        {{ $subject->days }}
-                    </td>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                    <td>
-                        {{ $subject->room }}
-                    </td>
+                <div>
+                    <p class="text-slate-400 text-sm">
+                        Student Number
+                    </p>
 
-                </tr>
+                    <p class="text-white font-semibold">
+                        {{ $student->student_number }}
+                    </p>
+                </div>
 
-            @endforeach
+                <div>
+                    <p class="text-slate-400 text-sm">
+                        Name
+                    </p>
 
-        </table>
+                    <p class="text-white font-semibold">
+                        {{ auth()->user()->name }}
+                    </p>
+                </div>
 
-        <br>
+                <div>
+                    <p class="text-slate-400 text-sm">
+                        Course
+                    </p>
 
-        <div style="text-align:right; margin-top:20px;">
+                    <p class="text-white font-semibold">
+                        {{ $student->course }}
+                    </p>
+                </div>
+
+                <div>
+                    <p class="text-slate-400 text-sm">
+                        Year Level
+                    </p>
+
+                    <p class="text-white font-semibold">
+                        {{ $student->year_level }}
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div>
 
             @if($isEnrolled)
 
-                <button disabled>
-                    FINALIZED
-                </button>
+                <span class="inline-flex items-center gap-2 px-5 py-3 rounded-full
+                bg-emerald-500/20 text-emerald-300">
+
+                    <i class="fa-solid fa-circle-check"></i>
+                    ENROLLED
+
+                </span>
 
             @else
 
-                <button type="submit" onclick="return confirm('Are you sure you want to finalize enrollment?')">
+                <span class="inline-flex items-center gap-2 px-5 py-3 rounded-full
+                bg-yellow-500/20 text-yellow-300">
 
-                    Finalize
+                    <i class="fa-solid fa-clock"></i>
+                    NOT ENROLLED
 
-                </button>
+                </span>
 
             @endif
 
         </div>
 
+    </div>
+
+</div>
+
+<!-- Current Enrolled Subjects -->
+
+<div class="mb-8">
+
+    <h2 class="text-2xl font-bold text-white mb-4">
+        Current Enrolled Subjects
+    </h2>
+
+    <div class="overflow-hidden rounded-[32px]
+    bg-white/5 backdrop-blur-2xl
+    border border-white/10">
+
+        <table class="w-full">
+
+            <thead>
+
+                <tr class="bg-white/5 border-b border-white/10">
+
+                    <th class="px-6 py-4 text-left text-slate-300">
+                        CODE
+                    </th>
+
+                    <th class="px-6 py-4 text-left text-slate-300">
+                        SUBJECT
+                    </th>
+
+                    <th class="px-6 py-4 text-left text-slate-300">
+                        UNITS
+                    </th>
+
+                    <th class="px-6 py-4 text-left text-slate-300">
+                        FROM
+                    </th>
+
+                    <th class="px-6 py-4 text-left text-slate-300">
+                        TO
+                    </th>
+
+                    <th class="px-6 py-4 text-left text-slate-300">
+                        DAYS
+                    </th>
+
+                    <th class="px-6 py-4 text-left text-slate-300">
+                        ROOM
+                    </th>
+
+                    <th class="px-6 py-4 text-left text-slate-300">
+                        STATUS
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @forelse($enrollments as $enrollment)
+
+                    <tr class="border-b border-white/5 hover:bg-white/5">
+
+                        <td class="px-6 py-4 text-cyan-300">
+                            {{ $enrollment->subject->code }}
+                        </td>
+
+                        <td class="px-6 py-4 text-white">
+                            {{ $enrollment->subject->title }}
+                        </td>
+
+                        <td class="px-6 py-4 text-slate-300">
+                            {{ $enrollment->subject->units }}
+                        </td>
+
+                        <td class="px-6 py-4 text-slate-300">
+                            {{ $enrollment->subject->time_from }}
+                        </td>
+
+                        <td class="px-6 py-4 text-slate-300">
+                            {{ $enrollment->subject->time_to }}
+                        </td>
+
+                        <td class="px-6 py-4 text-slate-300">
+                            {{ $enrollment->subject->days }}
+                        </td>
+
+                        <td class="px-6 py-4 text-slate-300">
+                            {{ $enrollment->subject->room }}
+                        </td>
+
+                        <td class="px-6 py-4">
+
+                            @if($enrollment->status === 'Approved')
+
+                                <span class="px-3 py-1 rounded-full
+                                bg-emerald-500/20 text-emerald-300 text-sm">
+
+                                    Approved
+
+                                </span>
+
+                            @elseif($enrollment->status === 'Rejected')
+
+                                <span class="px-3 py-1 rounded-full
+                                bg-red-500/20 text-red-300 text-sm">
+
+                                    Rejected
+
+                                </span>
+
+                            @else
+
+                                <span class="px-3 py-1 rounded-full
+                                bg-yellow-500/20 text-yellow-300 text-sm">
+
+                                    Pending
+
+                                </span>
+
+                            @endif
+
+                        </td>
+
+                    </tr>
+
+                @empty
+
+                    <tr>
+
+                        <td colspan="8" class="text-center py-10 text-slate-500">
+
+                            No enrolled subjects yet.
+
+                        </td>
+
+                    </tr>
+
+                @endforelse
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<!-- Section Selection -->
+
+<div class="bg-white/5 backdrop-blur-2xl border border-white/10
+rounded-[32px] p-6 mb-8">
+
+    <form method="GET" action="{{ route('portal') }}"
+        class="flex flex-col md:flex-row items-center gap-4">
+
+        <label class="text-slate-300 font-medium">
+
+            Select Section
+
+        </label>
+
+        <select name="section_id"
+            class="flex-1 bg-slate-800 border border-slate-700
+            text-white rounded-2xl px-4 py-3">
+
+            <option value="">
+                -- Select Section --
+            </option>
+
+            @foreach($sections as $section)
+
+                <option value="{{ $section->id }}"
+                    {{ request('section_id') == $section->id ? 'selected' : '' }}>
+
+                    {{ $section->name }}
+
+                </option>
+
+            @endforeach
+
+        </select>
+
+        <button type="submit"
+            class="px-6 py-3 rounded-2xl
+            bg-blue-600 hover:bg-blue-700
+            text-white font-semibold transition">
+
+            Load Subjects
+
+        </button>
+
     </form>
+
+</div>
+
+<!-- Available Subjects -->
+
+<form method="POST" action="{{ route('enroll.store') }}">
+
+    @csrf
+
+    <input type="hidden"
+        name="section_id"
+        value="{{ request('section_id') }}">
+
+    <div class="overflow-hidden rounded-[32px]
+    bg-white/5 backdrop-blur-2xl
+    border border-white/10">
+
+        <table class="w-full">
+
+            <thead>
+
+                <tr class="bg-white/5 border-b border-white/10">
+
+                    <th class="px-6 py-4 text-left text-slate-300">
+                        STAT
+                    </th>
+
+                    <th class="px-6 py-4 text-left text-slate-300">
+                        CODE
+                    </th>
+
+                    <th class="px-6 py-4 text-left text-slate-300">
+                        SUBJECT
+                    </th>
+
+                    <th class="px-6 py-4 text-left text-slate-300">
+                        UNITS
+                    </th>
+
+                    <th class="px-6 py-4 text-left text-slate-300">
+                        FROM
+                    </th>
+
+                    <th class="px-6 py-4 text-left text-slate-300">
+                        TO
+                    </th>
+
+                    <th class="px-6 py-4 text-left text-slate-300">
+                        DAYS
+                    </th>
+
+                    <th class="px-6 py-4 text-left text-slate-300">
+                        ROOM
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @foreach($subjects as $subject)
+
+                    <tr class="border-b border-white/5 hover:bg-white/5">
+
+                        <td class="px-6 py-4">
+
+                            <input
+                                type="checkbox"
+                                name="subjects[]"
+                                value="{{ $subject->id }}"
+                                checked
+                                {{ $isEnrolled ? 'disabled' : '' }}
+                                class="w-5 h-5 rounded">
+
+                        </td>
+
+                        <td class="px-6 py-4 text-cyan-300">
+                            {{ $subject->code }}
+                        </td>
+
+                        <td class="px-6 py-4 text-white">
+                            {{ $subject->title }}
+                        </td>
+
+                        <td class="px-6 py-4 text-slate-300">
+                            {{ $subject->units }}
+                        </td>
+
+                        <td class="px-6 py-4 text-slate-300">
+                            {{ $subject->time_from }}
+                        </td>
+
+                        <td class="px-6 py-4 text-slate-300">
+                            {{ $subject->time_to }}
+                        </td>
+
+                        <td class="px-6 py-4 text-slate-300">
+                            {{ $subject->days }}
+                        </td>
+
+                        <td class="px-6 py-4 text-slate-300">
+                            {{ $subject->room }}
+                        </td>
+
+                    </tr>
+
+                @endforeach
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <div class="flex justify-end mt-6">
+
+        @if($isEnrolled)
+
+            <button disabled
+                class="px-8 py-3 rounded-2xl
+                bg-emerald-500/20
+                text-emerald-300
+                font-semibold">
+
+                FINALIZED
+
+            </button>
+
+        @else
+
+            <button type="submit"
+                onclick="return confirm('Are you sure you want to finalize enrollment?')"
+                class="px-8 py-3 rounded-2xl
+                bg-blue-600 hover:bg-blue-700
+                text-white font-semibold transition">
+
+                Finalize Enrollment
+
+            </button>
+
+        @endif
+
+    </div>
+
+</form>
 </x-layout>

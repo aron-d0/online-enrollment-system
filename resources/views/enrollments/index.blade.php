@@ -1,41 +1,46 @@
 <x-layout title="Enrollment Reports">
 
-    <h1>Enrollment Reports</h1>
-
-    <div style="
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        margin-bottom:20px;
-    ">
-
-        <button type="button" onclick="window.location='{{ route('admin.dashboard') }}'">
-
-            ← Back
-
-        </button>
+    <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-6 mb-8">
 
         <div>
 
-            <form method="GET" action="{{ route('enrollments.export.json') }}" style="display:inline;">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full
+            bg-purple-500/10 border border-purple-500/20 text-purple-300 text-sm">
 
-                <button type="submit">
+                <i class="fa-solid fa-chart-line"></i>
+                Enrollment Analytics
 
-                    Export JSON
+            </div>
 
-                </button>
+            <h1 class="mt-4 text-5xl font-bold text-white">
+                Enrollment Reports
+            </h1>
 
-            </form>
+            <p class="mt-2 text-slate-400">
+                Review, approve, and manage student enrollments
+            </p>
 
-            <form method="GET" action="{{ route('enrollments.export.csv') }}" style="display:inline;">
+        </div>
 
-                <button type="submit">
+        <div class="flex gap-3">
 
-                    Export CSV
+            <a href="{{ route('enrollments.export.json') }}" class="px-5 py-3 rounded-2xl
+                bg-blue-500/20 border border-blue-500/20
+                text-blue-300 hover:bg-blue-500/30 transition">
 
-                </button>
+                <i class="fa-solid fa-file-code mr-2"></i>
+                Export JSON
 
-            </form>
+            </a>
+
+            <a href="{{ route('enrollments.export.csv') }}" class="px-5 py-3 rounded-2xl
+                bg-emerald-500/20 border border-emerald-500/20
+                text-emerald-300 hover:bg-emerald-500/30 transition">
+
+                <i class="fa-solid fa-file-csv mr-2"></i>
+                Export CSV
+
+            </a>
 
         </div>
 
@@ -43,103 +48,217 @@
 
     @if(session('success'))
 
-        <p>
-            <strong>{{ session('success') }}</strong>
-        </p>
+        <div class="mb-6 p-4 rounded-2xl
+                        bg-emerald-500/10 border border-emerald-500/20
+                        text-emerald-300">
+
+            <i class="fa-solid fa-circle-check mr-2"></i>
+
+            {{ session('success') }}
+
+        </div>
 
     @endif
 
-    <table>
+    <div class="overflow-hidden rounded-[32px]
+    bg-white/5 backdrop-blur-2xl
+    border border-white/10
+    shadow-[0_20px_60px_rgba(0,0,0,.25)]">
 
-        <tr>
+        <table class="w-full">
 
-            <th>Student Number</th>
-            <th>Student Name</th>
-            <th>Subject Code</th>
-            <th>Subject</th>
-            <th>Units</th>
-            <th>Status</th>
-            <th>Action</th>
+            <thead>
 
-        </tr>
+                <tr class="border-b border-white/10 bg-white/5">
 
-        @foreach($enrollments as $enrollment)
+                    <th class="px-6 py-5 text-left text-slate-300 font-semibold">
+                        Student Number
+                    </th>
 
-            <tr>
+                    <th class="px-6 py-5 text-left text-slate-300 font-semibold">
+                        Student Name
+                    </th>
 
-                <td>
-                    {{ $enrollment->student->student_number }}
-                </td>
+                    <th class="px-6 py-5 text-left text-slate-300 font-semibold">
+                        Subject Code
+                    </th>
 
-                <td>
-                    {{ $enrollment->student->user->name }}
-                </td>
+                    <th class="px-6 py-5 text-left text-slate-300 font-semibold">
+                        Subject
+                    </th>
 
-                <td>
-                    {{ $enrollment->subject->code }}
-                </td>
+                    <th class="px-6 py-5 text-left text-slate-300 font-semibold">
+                        Units
+                    </th>
 
-                <td>
-                    {{ $enrollment->subject->title }}
-                </td>
+                    <th class="px-6 py-5 text-left text-slate-300 font-semibold">
+                        Status
+                    </th>
 
-                <td>
-                    {{ $enrollment->subject->units }}
-                </td>
+                    <th class="px-6 py-5 text-left text-slate-300 font-semibold w-[340px]">
+                        Actions
+                    </th>
 
-                <td>
-                    {{ $enrollment->status }}
-                </td>
+                </tr>
 
-                <td style="white-space:nowrap;">
+            </thead>
 
-                    <form method="POST" action="{{ route('enrollments.approve', $enrollment->id) }}"
-                        style="display:inline;">
+            <tbody>
 
-                        @csrf
-                        @method('PATCH')
+                @foreach($enrollments as $enrollment)
 
-                        <button type="submit" style="background:green;">
+                    <tr class="border-b border-white/5 hover:bg-white/5 transition">
 
-                            Approve
+                        <td class="px-6 py-4 text-slate-200">
+                            {{ $enrollment->student->student_number }}
+                        </td>
 
-                        </button>
+                        <td class="px-6 py-4 text-white font-medium">
+                            {{ $enrollment->student->user->name }}
+                        </td>
 
-                    </form>
+                        <td class="px-6 py-4 text-cyan-300 font-medium">
+                            {{ $enrollment->subject->code }}
+                        </td>
 
-                    <form method="POST" action="{{ route('enrollments.reject', $enrollment->id) }}" style="display:inline;">
+                        <td class="px-6 py-4 text-slate-200">
+                            {{ $enrollment->subject->title }}
+                        </td>
 
-                        @csrf
-                        @method('PATCH')
+                        <td class="px-6 py-4 text-slate-200">
+                            {{ $enrollment->subject->units }}
+                        </td>
 
-                        <button type="submit" style="background:red;">
+                        <td class="px-6 py-4">
 
-                            Reject
+                            @if($enrollment->status === 'Approved')
 
-                        </button>
+                                <span class="px-3 py-1 rounded-full
+                                                                bg-emerald-500/20 text-emerald-300 text-sm">
 
-                    </form>
+                                    Approved
 
-                    <form method="POST" action="{{ route('enrollments.reset', $enrollment->student->id) }}"
-                        style="display:inline;">
+                                </span>
 
-                        @csrf
-                        @method('DELETE')
+                            @elseif($enrollment->status === 'Rejected')
 
-                        <button type="submit" onclick="return confirm('Reset all enrollments for this student?')">
+                                <span class="px-3 py-1 rounded-full
+                                                                bg-red-500/20 text-red-300 text-sm">
 
-                            Reset
+                                    Rejected
 
-                        </button>
+                                </span>
 
-                    </form>
+                            @else
 
-                </td>
+                                <span class="px-3 py-1 rounded-full
+                                                                bg-yellow-500/20 text-yellow-300 text-sm">
 
-            </tr>
+                                    Pending
 
-        @endforeach
+                                </span>
 
-    </table>
+                            @endif
+
+                        </td>
+
+                        <td class="px-6 py-4">
+
+                            <div class="flex items-center gap-2 whitespace-nowrap">
+
+                                @if($enrollment->status === 'Pending')
+
+                                            <form method="POST" action="{{ route('enrollments.approve', $enrollment->id) }}">
+
+                                                @csrf
+                                                @method('PATCH')
+
+                                                <button type="submit" class="h-10 px-4 rounded-full
+                                    bg-emerald-500/15 border border-emerald-500/20
+                                    text-emerald-300 hover:bg-emerald-500/25
+                                    transition-all duration-200 hover:scale-105">
+
+                                                    <i class="fa-solid fa-check mr-2"></i>
+                                                    Approve
+
+                                                </button>
+
+                                            </form>
+
+                                            <form method="POST" action="{{ route('enrollments.reject', $enrollment->id) }}">
+
+                                                @csrf
+                                                @method('PATCH')
+
+                                                <button type="submit" class="h-10 px-4 rounded-full
+                                    bg-red-500/15 border border-red-500/20
+                                    text-red-300 hover:bg-red-500/25
+                                    transition-all duration-200 hover:scale-105">
+
+                                                    <i class="fa-solid fa-xmark mr-2"></i>
+                                                    Reject
+
+                                                </button>
+
+                                            </form>
+
+                                @endif
+
+                                <form method="POST" action="{{ route('enrollments.destroy', $enrollment->id) }}">
+
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button type="submit" onclick="return confirm('Delete this enrollment?')" class="h-10 px-4 rounded-full
+                    bg-slate-700/50 border border-slate-600
+                    text-slate-300 hover:bg-slate-600
+                    transition-all duration-200 hover:scale-105">
+
+                                        <i class="fa-solid fa-trash mr-2"></i>
+                                        Delete
+
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                @endforeach
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const scrollPosition = sessionStorage.getItem('enrollmentScroll');
+
+            if (scrollPosition) {
+                window.scrollTo(0, parseInt(scrollPosition));
+                sessionStorage.removeItem('enrollmentScroll');
+            }
+
+            document.querySelectorAll('form').forEach(form => {
+
+                form.addEventListener('submit', () => {
+
+                    sessionStorage.setItem(
+                        'enrollmentScroll',
+                        window.scrollY
+                    );
+
+                });
+
+            });
+
+        });
+    </script>
 
 </x-layout>
