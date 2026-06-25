@@ -6,6 +6,7 @@
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <link rel="icon" href="{{ asset('favicon.ico') }}?v=1" type="image/x-icon">
 
@@ -121,8 +122,8 @@
                             <a href="/admin/enrollments"
                                 class="px-5 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-blue-500/15 hover:border-blue-500/20 transition">
 
-                                <i class="fa-solid fa-chart-line mr-2"></i>
-                                Reports
+                                <i class="fa-solid fa-file-signature mr-2"></i>
+                                Enrollments
 
                             </a>
 

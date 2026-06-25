@@ -54,9 +54,34 @@ Route::middleware('auth')->group(function () {
         )->name('students.index');
 
         Route::get(
+            '/admin/students/{student}/edit',
+            [StudentController::class, 'edit']
+        )->name('students.edit');
+
+        Route::patch(
+            '/admin/students/{student}',
+            [StudentController::class, 'update']
+        )->name('students.update');
+
+        Route::delete(
+            '/admin/students/{student}',
+            [StudentController::class, 'destroy']
+        )->name('students.destroy');
+
+        Route::get(
             '/admin/enrollments',
             [EnrollmentController::class, 'index']
         )->name('enrollments.index');
+
+        Route::patch(
+            '/admin/enrollments/bulk-status',
+            [EnrollmentController::class, 'bulkStatus']
+        )->name('enrollments.bulk-status');
+
+        Route::delete(
+            '/admin/enrollments/bulk',
+            [EnrollmentController::class, 'bulkDestroy']
+        )->name('enrollments.bulk-destroy');
 
         Route::delete(
             '/admin/enrollments/{enrollment}',

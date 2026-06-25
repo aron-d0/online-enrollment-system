@@ -200,14 +200,14 @@
 
             </a>
 
-            <!-- Reports -->
+            <!-- Enrollments -->
             <a href="/admin/enrollments"
                 class="group bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-purple-500/10 transition">
 
-                <i class="fa-solid fa-chart-line text-3xl text-purple-400"></i>
+                <i class="fa-solid fa-file-signature text-3xl text-purple-400"></i>
 
                 <h3 class="mt-4 text-lg font-semibold text-white">
-                    Reports
+                    Enrollments
                 </h3>
 
                 <p class="text-slate-400 text-sm mt-1">

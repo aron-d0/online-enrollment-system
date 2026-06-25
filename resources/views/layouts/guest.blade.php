@@ -19,7 +19,7 @@
 </head>
 
 <body class="font-sans antialiased">
-    <div class="min-h-screen flex items-center justify-center relative overflow-hidden bg-slate-950">
+    <div class="min-h-screen flex items-center justify-center relative overflow-x-hidden bg-slate-950 py-12 sm:py-16">
 
         <!-- Background Gradient -->
         <div class="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950"></div>
@@ -28,7 +28,7 @@
         <div class="absolute top-0 left-0 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl"></div>
         <div class="absolute bottom-0 right-0 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl"></div>
 
-        <div class="relative z-10 w-full max-w-md px-6">
+        <div class="relative z-10 w-full max-w-md px-6 my-6">
 
             <!-- Branding -->
             <div class="text-center mb-8">

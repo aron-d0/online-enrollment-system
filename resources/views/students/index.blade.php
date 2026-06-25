@@ -42,6 +42,13 @@
 
     </div>
 
+    @if (session('success'))
+        <div class="mb-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-5 py-4 text-emerald-300">
+            <i class="fa-solid fa-circle-check mr-2"></i>
+            {{ session('success') }}
+        </div>
+    @endif
+
     <!-- Student Table -->
     <div class="overflow-hidden rounded-[32px]
     bg-white/5 backdrop-blur-2xl
@@ -72,6 +79,10 @@
 
                     <th class="px-6 py-5 text-left text-slate-400 font-medium">
                         Email
+                    </th>
+
+                    <th class="px-6 py-5 text-right text-slate-400 font-medium">
+                        Actions
                     </th>
 
                 </tr>
@@ -127,9 +138,45 @@
                             {{ $student->user->email }}
                         </td>
 
+                        <td class="px-6 py-5">
+
+                            <div class="flex items-center justify-end gap-3">
+
+                                <a href="{{ route('students.edit', $student) }}"
+                                    class="inline-flex items-center gap-2 rounded-2xl border border-blue-500/20 bg-blue-500/10 px-4 py-2 text-sm font-semibold text-blue-300 transition hover:bg-blue-500/20">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                    Edit
+                                </a>
+
+                                <form method="POST" action="{{ route('students.destroy', $student) }}"
+                                    onsubmit="return confirm('Delete this student account? This will remove their login and student record.');">
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button type="submit"
+                                        class="inline-flex items-center gap-2 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-300 transition hover:bg-red-500/20">
+                                        <i class="fa-solid fa-trash"></i>
+                                        Delete
+                                    </button>
+                                </form>
+
+                            </div>
+
+                        </td>
+
                     </tr>
 
                 @endforeach
+
+                @if ($students->isEmpty())
+
+                    <tr>
+                        <td colspan="6" class="px-6 py-12 text-center text-slate-400">
+                            No student records found.
+                        </td>
+                    </tr>
+
+                @endif
 
             </tbody>
 

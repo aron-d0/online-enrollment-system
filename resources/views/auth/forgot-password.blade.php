@@ -38,16 +38,10 @@
 
             </button>
 
-            <a href="{{ route('login') }}" class="block w-full text-center
-                bg-slate-800 hover:bg-slate-700
-                border border-slate-700
-                text-slate-300
-                font-semibold
-                py-3
-                rounded-lg
-                transition">
+            <a href="{{ route('login') }}"
+                class="block w-full border border-blue-500/70 text-blue-300 hover:bg-blue-500/10 hover:text-blue-200 transition font-semibold py-3 rounded-lg text-center">
 
-                ← Back to Login
+                Back to Login
 
             </a>
 

@@ -7,6 +7,7 @@ use App\Models\Student;
 use App\Models\Section;
 use App\Models\Subject;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class EnrollmentController extends Controller
@@ -30,7 +31,14 @@ class EnrollmentController extends Controller
         $enrollments = Enrollment::with([
             'student.user',
             'subject'
-        ])->get();
+        ])
+            ->join('students', 'enrollments.student_id', '=', 'students.id')
+            ->join('users', 'students.user_id', '=', 'users.id')
+            ->select('enrollments.*')
+            ->orderBy('users.name')
+            ->orderBy('students.student_number')
+            ->orderBy('enrollments.created_at')
+            ->get();
 
         return view(
             'enrollments.index',
@@ -164,6 +172,13 @@ class EnrollmentController extends Controller
             'status' => 'Approved'
         ]);
 
+        if (request()->expectsJson()) {
+            return response()->json([
+                'message' => 'Enrollment approved successfully.',
+                'status' => $enrollment->status,
+            ]);
+        }
+
         return back()->with(
             'success',
             'Enrollment approved successfully.'
@@ -176,11 +191,70 @@ class EnrollmentController extends Controller
             'status' => 'Rejected'
         ]);
 
+        if (request()->expectsJson()) {
+            return response()->json([
+                'message' => 'Enrollment rejected successfully.',
+                'status' => $enrollment->status,
+            ]);
+        }
+
         return back()->with(
             'success',
             'Enrollment rejected successfully.'
         );
     }
+
+    public function bulkStatus(Request $request)
+    {
+        $validated = $request->validate([
+            'enrollment_ids' => ['required', 'array', 'min:1'],
+            'enrollment_ids.*' => ['integer', 'exists:enrollments,id'],
+            'status' => ['required', Rule::in(['Approved', 'Rejected'])],
+        ]);
+
+        Enrollment::whereIn('id', $validated['enrollment_ids'])
+            ->update([
+                'status' => $validated['status']
+            ]);
+
+        $message = $validated['status'] === 'Approved'
+            ? 'Selected enrollments approved successfully.'
+            : 'Selected enrollments rejected successfully.';
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => $message,
+                'status' => $validated['status'],
+                'enrollment_ids' => $validated['enrollment_ids'],
+            ]);
+        }
+
+        return back()->with('success', $message);
+    }
+
+    public function bulkDestroy(Request $request)
+    {
+        $validated = $request->validate([
+            'enrollment_ids' => ['required', 'array', 'min:1'],
+            'enrollment_ids.*' => ['integer', 'exists:enrollments,id'],
+        ]);
+
+        Enrollment::whereIn('id', $validated['enrollment_ids'])
+            ->delete();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Selected enrollments deleted successfully.',
+                'enrollment_ids' => $validated['enrollment_ids'],
+            ]);
+        }
+
+        return back()->with(
+            'success',
+            'Selected enrollments deleted successfully.'
+        );
+    }
+
     public function destroy(Enrollment $enrollment)
     {
         $enrollment->delete();
