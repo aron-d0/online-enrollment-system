@@ -23,6 +23,9 @@ Route::middleware('guest')->group(function () {
 
     Route::post('register', [RegisteredUserController::class, 'store']);
 
+    Route::get('register/confirmation', [RegisteredUserController::class, 'confirmation'])
+        ->name('register.confirmation');
+
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');
 

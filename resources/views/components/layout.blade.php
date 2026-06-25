@@ -2,10 +2,12 @@
 <html>
 
 <head>
-    <title>{{ $title ?? 'Online Enrollment System' }}</title>
+    <title>{{ isset($title) ? $title . ' | ' : '' }}{{ config('app.name', 'Online Enrollment System') }}</title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="icon" href="{{ asset('favicon.ico') }}?v=1" type="image/x-icon">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 

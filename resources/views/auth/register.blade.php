@@ -32,7 +32,7 @@
             <x-text-input id="student_number"
                 class="block mt-2 w-full bg-slate-800 border-slate-700 text-white rounded-lg"
                 type="text" name="student_number" :value="old('student_number')" required autocomplete="off"
-                placeholder="Ex. 22-LN-1234" />
+                placeholder="Ex. 22-LN-1234" oninput="this.value = this.value.toUpperCase()" />
 
             <x-input-error :messages="$errors->get('student_number')" class="mt-2" />
         </div>
@@ -46,11 +46,9 @@
                     class="block mt-2 w-full bg-slate-800 border-slate-700 text-white rounded-lg focus:border-indigo-500 focus:ring-indigo-500">
                     <option value="" disabled @selected(old('course') === null)>Select course</option>
 
-                    @foreach (['BSCS', 'BSIT', 'BSMath'] as $course)
-                        <option value="{{ $course }}" @selected(old('course') === $course)>
-                            {{ $course }}
-                        </option>
-                    @endforeach
+                    <option value="BSIT" @selected(old('course') === 'BSIT')>
+                        BSIT
+                    </option>
                 </select>
 
                 <x-input-error :messages="$errors->get('course')" class="mt-2" />
@@ -63,11 +61,9 @@
                     class="block mt-2 w-full bg-slate-800 border-slate-700 text-white rounded-lg focus:border-indigo-500 focus:ring-indigo-500">
                     <option value="" disabled @selected(old('year_level') === null)>Select year</option>
 
-                    @foreach ([1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV'] as $value => $label)
-                        <option value="{{ $value }}" @selected((int) old('year_level') === $value)>
-                            {{ $label }}
-                        </option>
-                    @endforeach
+                    <option value="3" @selected((int) old('year_level') === 3)>
+                        III
+                    </option>
                 </select>
 
                 <x-input-error :messages="$errors->get('year_level')" class="mt-2" />
@@ -83,8 +79,7 @@
             <div class="mt-2 flex rounded-lg shadow-sm">
                 <x-text-input id="email"
                     class="block w-full rounded-r-none bg-slate-800 border-slate-700 text-white"
-                    type="text" name="email_username" :value="old('email_username')" required autocomplete="username"
-                    placeholder="Ex. email" />
+                    type="text" name="email_username" :value="old('email_username')" required autocomplete="username" />
 
                 <span
                     class="inline-flex items-center rounded-r-lg border border-l-0 border-slate-700 bg-slate-700 px-4 text-sm text-slate-200">
