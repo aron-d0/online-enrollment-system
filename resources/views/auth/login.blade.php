@@ -65,4 +65,21 @@
 
     </form>
 
+    @if (Route::has('register'))
+
+        <div class="mt-6 pt-6 border-t border-slate-700 text-center">
+
+            <p class="text-sm text-slate-400">
+                New to the enrollment system?
+            </p>
+
+            <a href="{{ route('register') }}"
+                class="mt-3 block w-full border border-blue-500/70 text-blue-300 hover:bg-blue-500/10 hover:text-blue-200 transition font-semibold py-3 rounded-lg">
+                Create an Account
+            </a>
+
+        </div>
+
+    @endif
+
 </x-guest-layout>

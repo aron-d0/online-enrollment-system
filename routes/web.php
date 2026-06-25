@@ -14,14 +14,26 @@ Route::get('/', function () {
     if (auth()->check()) {
 
         if (auth()->user()->role === 'admin') {
-            return redirect('/admin');
+            return redirect()->route('admin.dashboard');
         }
 
-        return redirect('/portal');
+        return redirect()->route('portal');
     }
 
-    return redirect('/login');
+    return redirect()->route('login');
 });
+
+Route::get('/dashboard', function () {
+    if (! auth()->check()) {
+        return redirect('/login');
+    }
+
+    if (auth()->user()->role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    }
+
+    return redirect()->route('portal');
+})->middleware('auth')->name('dashboard');
 
 Route::middleware('auth')->group(function () {
 
