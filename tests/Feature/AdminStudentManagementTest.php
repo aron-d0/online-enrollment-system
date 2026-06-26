@@ -23,6 +23,50 @@ class AdminStudentManagementTest extends TestCase
         $response->assertSee($student->student_number);
     }
 
+    public function test_admin_can_view_student_create_screen(): void
+    {
+        [$admin] = $this->makeAdminAndStudent();
+
+        $response = $this->actingAs($admin)->get(route('students.create'));
+
+        $response->assertOk();
+        $response->assertSee('Add Student');
+    }
+
+    public function test_admin_can_create_linked_user_and_student_records(): void
+    {
+        [$admin] = $this->makeAdminAndStudent();
+
+        $response = $this->actingAs($admin)->post(route('students.store'), [
+            'name' => 'New Student',
+            'student_number' => '22-ln-1234',
+            'course' => 'BSIT',
+            'year_level' => 3,
+            'email_username' => 'newstudent',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ]);
+
+        $response->assertRedirect(route('students.index'));
+
+        $this->assertDatabaseHas('users', [
+            'name' => 'NEW STUDENT',
+            'email' => 'newstudent@psu.edu.ph',
+            'role' => 'student',
+        ]);
+
+        $user = User::where('email', 'newstudent@psu.edu.ph')->firstOrFail();
+
+        $this->assertTrue(Hash::check('password123', $user->password));
+
+        $this->assertDatabaseHas('students', [
+            'user_id' => $user->id,
+            'student_number' => '22-LN-1234',
+            'course' => 'BSIT',
+            'year_level' => 3,
+        ]);
+    }
+
     public function test_admin_can_update_linked_user_and_student_records(): void
     {
         [$admin, $student] = $this->makeAdminAndStudent();
@@ -69,6 +113,14 @@ class AdminStudentManagementTest extends TestCase
         [, $student] = $this->makeAdminAndStudent();
         $regularUser = User::factory()->create();
         $regularUser->forceFill(['role' => 'student'])->save();
+
+        $this->actingAs($regularUser)
+            ->get(route('students.create'))
+            ->assertRedirect('/portal');
+
+        $this->actingAs($regularUser)
+            ->post(route('students.store'), [])
+            ->assertRedirect('/portal');
 
         $this->actingAs($regularUser)
             ->get(route('students.edit', $student))

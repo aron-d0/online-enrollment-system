@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Section;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class SectionController extends Controller
 {
@@ -12,7 +13,11 @@ class SectionController extends Controller
      */
     public function index()
     {
-        $sections = Section::all();
+        $sections = Section::withCount('subjects')
+            ->orderBy('school_year', 'desc')
+            ->orderByRaw("CASE semester WHEN '1st Semester' THEN 1 WHEN '2nd Semester' THEN 2 WHEN 'Summer' THEN 3 ELSE 4 END")
+            ->orderBy('name')
+            ->get();
 
         return view('sections.index', compact('sections'));
     }
@@ -30,13 +35,11 @@ class SectionController extends Controller
      */
     public function store(Request $request)
     {
-        Section::create([
-            'name' => $request->name,
-            'semester' => $request->semester,
-            'school_year' => $request->school_year,
-        ]);
+        Section::create($this->validatedSectionData($request));
 
-        return redirect()->route('sections.index');
+        return redirect()
+            ->route('sections.index')
+            ->with('success', 'Section created successfully.');
     }
 
     /**
@@ -60,13 +63,11 @@ class SectionController extends Controller
      */
     public function update(Request $request, Section $section)
     {
-        $section->update([
-            'name' => $request->name,
-            'semester' => $request->semester,
-            'school_year' => $request->school_year,
-        ]);
+        $section->update($this->validatedSectionData($request, $section));
 
-        return redirect()->route('sections.index');
+        return redirect()
+            ->route('sections.index')
+            ->with('success', 'Section updated successfully.');
     }
 
     /**
@@ -74,8 +75,55 @@ class SectionController extends Controller
      */
     public function destroy(Section $section)
     {
+        if ($section->subjects()->exists()) {
+            return back()->with(
+                'error',
+                'This section still has subjects assigned. Move or delete those subjects first.'
+            );
+        }
+
         $section->delete();
 
-        return redirect()->route('sections.index');
+        return redirect()
+            ->route('sections.index')
+            ->with('success', 'Section deleted successfully.');
+    }
+
+    private function validatedSectionData(Request $request, ?Section $section = null): array
+    {
+        $request->merge([
+            'name' => strtoupper(trim((string) $request->name)),
+            'semester' => trim((string) $request->semester),
+            'school_year' => trim((string) $request->school_year),
+        ]);
+
+        return $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'max:50',
+                'regex:/^[A-Z0-9 -]+$/',
+                Rule::unique('sections', 'name')
+                    ->where('semester', $request->semester)
+                    ->where('school_year', $request->school_year)
+                    ->ignore($section?->id),
+            ],
+            'semester' => [
+                'required',
+                Rule::in([
+                    '1st Semester',
+                    '2nd Semester',
+                    'Summer',
+                ]),
+            ],
+            'school_year' => [
+                'required',
+                'regex:/^\d{4}-\d{4}$/',
+            ],
+        ], [
+            'name.regex' => 'Section name may only contain letters, numbers, spaces, and dashes.',
+            'name.unique' => 'That section already exists for the selected semester and school year.',
+            'school_year.regex' => 'School year must use the format YYYY-YYYY, for example 2026-2027.',
+        ]);
     }
 }

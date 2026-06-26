@@ -44,15 +44,19 @@
 
                             @foreach($sections as $section)
 
-                                <option value="{{ $section->id }}" {{ $subject->section_id == $section->id ? 'selected' : '' }}>
+                                <option value="{{ $section->id }}" {{ old('section_id', $subject->section_id) == $section->id ? 'selected' : '' }}>
 
-                                    {{ $section->name }}
+                                    {{ $section->name }} · {{ $section->semester }} · {{ $section->school_year }}
 
                                 </option>
 
                             @endforeach
 
                         </select>
+
+                        @error('section_id')
+                            <p class="mt-2 text-sm text-red-300">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div>
@@ -60,8 +64,14 @@
                             Subject Code
                         </label>
 
-                        <input type="text" name="code" value="{{ $subject->code }}" required class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
+                        <input type="text" name="code" value="{{ old('code', $subject->code) }}" required
+                            oninput="this.value = this.value.toUpperCase()"
+                            class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
                             text-white px-4 py-3">
+
+                        @error('code')
+                            <p class="mt-2 text-sm text-red-300">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div>
@@ -69,8 +79,13 @@
                             Subject Title
                         </label>
 
-                        <input type="text" name="title" value="{{ $subject->title }}" required class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
+                        <input type="text" name="title" value="{{ old('title', $subject->title) }}" required
+                            class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
                             text-white px-4 py-3">
+
+                        @error('title')
+                            <p class="mt-2 text-sm text-red-300">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div>
@@ -78,8 +93,13 @@
                             Units
                         </label>
 
-                        <input type="number" name="units" value="{{ $subject->units }}" min="1" required class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
+                        <input type="number" name="units" value="{{ old('units', $subject->units) }}" min="1" max="6" required
+                            class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
                             text-white px-4 py-3">
+
+                        @error('units')
+                            <p class="mt-2 text-sm text-red-300">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div>
@@ -87,8 +107,14 @@
                             Days
                         </label>
 
-                        <input type="text" name="days" value="{{ $subject->days }}" placeholder="MWF" class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
+                        <input type="text" name="days" value="{{ old('days', $subject->days) }}" placeholder="MWF" required
+                            oninput="this.value = this.value.toUpperCase()"
+                            class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
                             text-white px-4 py-3">
+
+                        @error('days')
+                            <p class="mt-2 text-sm text-red-300">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div>
@@ -96,8 +122,14 @@
                             Room
                         </label>
 
-                        <input type="text" name="room" value="{{ $subject->room }}" placeholder="ITRM 3" class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
+                        <input type="text" name="room" value="{{ old('room', $subject->room) }}" placeholder="ITRM 3" required
+                            oninput="this.value = this.value.toUpperCase()"
+                            class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
                             text-white px-4 py-3">
+
+                        @error('room')
+                            <p class="mt-2 text-sm text-red-300">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div>
@@ -105,8 +137,13 @@
                             Time From
                         </label>
 
-                        <input type="time" name="time_from" value="{{ $subject->time_from }}" class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
+                        <input type="time" name="time_from" value="{{ old('time_from', $subject->timeFromForInput()) }}" required
+                            class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
                             text-white px-4 py-3">
+
+                        @error('time_from')
+                            <p class="mt-2 text-sm text-red-300">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div>
@@ -114,8 +151,13 @@
                             Time To
                         </label>
 
-                        <input type="time" name="time_to" value="{{ $subject->time_to }}" class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
+                        <input type="time" name="time_to" value="{{ old('time_to', $subject->timeToForInput()) }}" required
+                            class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
                             text-white px-4 py-3">
+
+                        @error('time_to')
+                            <p class="mt-2 text-sm text-red-300">{{ $message }}</p>
+                        @enderror
                     </div>
 
                 </div>

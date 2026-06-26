@@ -28,12 +28,58 @@ class StudentController extends Controller
 
     public function create()
     {
-        //
+        return view('students.create');
     }
 
     public function store(Request $request)
     {
-        //
+        $emailUsername = Str::lower(trim((string) $request->input('email_username')));
+
+        $request->merge([
+            'name' => Str::upper(trim((string) $request->input('name'))),
+            'student_number' => Str::upper(trim((string) $request->input('student_number'))),
+            'course' => trim((string) $request->input('course')),
+            'email_username' => $emailUsername,
+            'email' => $emailUsername.'@psu.edu.ph',
+        ]);
+
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'student_number' => ['required', 'string', 'max:255', 'unique:students,student_number'],
+            'course' => ['required', 'string', Rule::in(['BSIT'])],
+            'year_level' => ['required', 'integer', Rule::in([3])],
+            'email_username' => ['required', 'string', 'max:64', 'regex:/^[a-z0-9._%+-]+$/'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+        if (User::whereRaw('LOWER(name) = ?', [Str::lower($request->name)])->exists()) {
+            throw ValidationException::withMessages([
+                'name' => 'An account with this name already exists.',
+            ]);
+        }
+
+        DB::transaction(function () use ($request) {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+
+            $user->forceFill([
+                'role' => 'student',
+            ])->save();
+
+            $user->student()->create([
+                'student_number' => $request->student_number,
+                'course' => $request->course,
+                'year_level' => $request->year_level,
+            ]);
+        });
+
+        return redirect()
+            ->route('students.index')
+            ->with('success', 'Student account created successfully.');
     }
 
     public function show(Student $student)

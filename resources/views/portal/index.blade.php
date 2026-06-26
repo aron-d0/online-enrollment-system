@@ -30,7 +30,7 @@
     </h1>
 
     <p class="mt-2 text-slate-400">
-        Welcome back, {{ auth()->user()->name }}
+        Welcome, {{ auth()->user()->name }}
     </p>
 
 </div>
@@ -197,11 +197,11 @@ rounded-[32px] p-8 mb-8">
                         </td>
 
                         <td class="px-6 py-4 text-slate-300">
-                            {{ $enrollment->subject->time_from }}
+                            {{ $enrollment->subject->timeFromForDisplay() }}
                         </td>
 
                         <td class="px-6 py-4 text-slate-300">
-                            {{ $enrollment->subject->time_to }}
+                            {{ $enrollment->subject->timeToForDisplay() }}
                         </td>
 
                         <td class="px-6 py-4 text-slate-300">
@@ -319,7 +319,10 @@ rounded-[32px] p-6 mb-8">
 
 <!-- Available Subjects -->
 
-<form method="POST" action="{{ route('enroll.store') }}">
+<form method="POST" action="{{ route('enroll.store') }}"
+    data-confirm-title="Finalize Enrollment"
+    data-confirm-message="Are you sure you want to finalize enrollment?"
+    data-confirm-button="Finalize">
 
     @csrf
 
@@ -404,11 +407,11 @@ rounded-[32px] p-6 mb-8">
                         </td>
 
                         <td class="px-6 py-4 text-slate-300">
-                            {{ $subject->time_from }}
+                            {{ $subject->timeFromForDisplay() }}
                         </td>
 
                         <td class="px-6 py-4 text-slate-300">
-                            {{ $subject->time_to }}
+                            {{ $subject->timeToForDisplay() }}
                         </td>
 
                         <td class="px-6 py-4 text-slate-300">
@@ -446,7 +449,6 @@ rounded-[32px] p-6 mb-8">
         @else
 
             <button type="submit"
-                onclick="return confirm('Are you sure you want to finalize enrollment?')"
                 class="px-8 py-3 rounded-2xl
                 bg-blue-600 hover:bg-blue-700
                 text-white font-semibold transition">

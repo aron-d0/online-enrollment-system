@@ -91,15 +91,51 @@ class EnrollmentController extends Controller
     // }
     public function exportJson()
     {
-        $enrollments = Enrollment::with([
-            'student.user',
-            'subject'
-        ])->get();
+        $enrollments = $this->enrollmentExportQuery();
+
+        $students = $enrollments
+            ->groupBy('student_id')
+            ->values()
+            ->map(function ($studentEnrollments) {
+                $student = $studentEnrollments->first()->student;
+                $user = $student->user;
+
+                return [
+                    'student_number' => $student->student_number,
+                    'student_name' => $user->name,
+                    'email' => $user->email,
+                    'course' => $student->course,
+                    'year_level' => $student->year_level,
+                    'enrollments' => $studentEnrollments->map(function ($enrollment) {
+                        return [
+                            'subject_code' => $enrollment->subject->code,
+                            'subject_title' => $enrollment->subject->title,
+                            'units' => $enrollment->subject->units,
+                            'schedule' => $enrollment->subject->scheduleForDisplay(),
+                            'section' => $enrollment->subject->section?->name,
+                            'semester' => $enrollment->subject->section?->semester,
+                            'school_year' => $enrollment->subject->section?->school_year,
+                            'status' => $enrollment->status,
+                            'enrolled_at' => $enrollment->created_at?->format('Y-m-d H:i:s'),
+                        ];
+                    })->values(),
+                ];
+            });
+
+        $report = [
+            'generated_at' => now()->format('Y-m-d H:i:s'),
+            'total_students' => $students->count(),
+            'total_enrollments' => $enrollments->count(),
+            'totals_by_status' => [
+                'pending' => $enrollments->where('status', 'Pending')->count(),
+                'approved' => $enrollments->where('status', 'Approved')->count(),
+                'rejected' => $enrollments->where('status', 'Rejected')->count(),
+            ],
+            'students' => $students,
+        ];
 
         return response(
-            $enrollments->toJson(
-                JSON_PRETTY_PRINT
-            )
+            json_encode($report, JSON_PRETTY_PRINT)
         )
             ->header(
                 'Content-Type',
@@ -107,16 +143,13 @@ class EnrollmentController extends Controller
             )
             ->header(
                 'Content-Disposition',
-                'attachment; filename="enrollment_report.json"'
+                'attachment; filename="enrollments_' . now()->format('Y-m-d') . '.json"'
             );
     }
 
     public function exportCsv()
     {
-        $enrollments = Enrollment::with([
-            'student.user',
-            'subject'
-        ])->get();
+        $enrollments = $this->enrollmentExportQuery();
 
         $response = new StreamedResponse(function () use ($enrollments) {
 
@@ -125,10 +158,18 @@ class EnrollmentController extends Controller
             fputcsv($handle, [
                 'Student Number',
                 'Student Name',
+                'Email',
+                'Course',
+                'Year Level',
+                'Section',
+                'Semester',
+                'School Year',
                 'Subject Code',
-                'Subject',
+                'Subject Title',
+                'Schedule',
                 'Units',
-                'Status'
+                'Status',
+                'Enrolled At'
             ]);
 
             foreach ($enrollments as $enrollment) {
@@ -139,13 +180,29 @@ class EnrollmentController extends Controller
 
                     $enrollment->student->user->name,
 
+                    $enrollment->student->user->email,
+
+                    $enrollment->student->course,
+
+                    $enrollment->student->year_level,
+
+                    $enrollment->subject->section?->name,
+
+                    $enrollment->subject->section?->semester,
+
+                    $enrollment->subject->section?->school_year,
+
                     $enrollment->subject->code,
 
                     $enrollment->subject->title,
 
+                    $enrollment->subject->scheduleForDisplay(),
+
                     $enrollment->subject->units,
 
                     $enrollment->status,
+
+                    $enrollment->created_at?->format('Y-m-d H:i:s'),
 
                 ]);
             }
@@ -155,15 +212,31 @@ class EnrollmentController extends Controller
 
         $response->headers->set(
             'Content-Type',
-            'text/csv'
+            'text/csv; charset=UTF-8'
         );
 
         $response->headers->set(
             'Content-Disposition',
-            'attachment; filename="enrollment_report.csv"'
+            'attachment; filename="enrollments_' . now()->format('Y-m-d') . '.csv"'
         );
 
         return $response;
+    }
+
+    private function enrollmentExportQuery()
+    {
+        return Enrollment::with([
+            'student.user',
+            'subject.section'
+        ])
+            ->join('students', 'enrollments.student_id', '=', 'students.id')
+            ->join('users', 'students.user_id', '=', 'users.id')
+            ->join('subjects', 'enrollments.subject_id', '=', 'subjects.id')
+            ->select('enrollments.*')
+            ->orderBy('users.name')
+            ->orderBy('students.student_number')
+            ->orderBy('subjects.code')
+            ->get();
     }
 
     public function approve(Enrollment $enrollment)
@@ -257,7 +330,16 @@ class EnrollmentController extends Controller
 
     public function destroy(Enrollment $enrollment)
     {
+        $id = $enrollment->id;
+
         $enrollment->delete();
+
+        if (request()->expectsJson()) {
+            return response()->json([
+                'message' => 'Enrollment deleted successfully.',
+                'enrollment_id' => $id,
+            ]);
+        }
 
         return back()->with(
             'success',

@@ -146,6 +146,130 @@
 
     </div>
 
+    <div id="confirmationModal"
+        class="fixed inset-0 z-[9998] hidden items-center justify-center px-6"
+        aria-hidden="true">
+
+        <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" data-confirm-cancel></div>
+
+        <div
+            class="relative z-10 w-full max-w-md rounded-[32px] border border-white/10 bg-slate-900/95 p-7 text-center shadow-[0_25px_80px_rgba(0,0,0,.55)]">
+
+            <div
+                class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-amber-400/20 bg-amber-400/10 text-amber-300">
+                <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+            </div>
+
+            <h2 class="mt-5 text-2xl font-bold text-white" data-confirm-title>
+                Confirm Action
+            </h2>
+
+            <p class="mt-3 text-slate-400" data-confirm-message>
+                Are you sure you want to continue?
+            </p>
+
+            <div class="mt-7 grid grid-cols-1 gap-3 sm:grid-cols-2">
+
+                <button type="button"
+                    class="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 font-semibold text-slate-300 transition hover:bg-white/10"
+                    data-confirm-cancel>
+                    Cancel
+                </button>
+
+                <button type="button"
+                    class="rounded-2xl border border-red-500/20 bg-red-500/15 px-5 py-3 font-semibold text-red-300 transition hover:bg-red-500/25"
+                    data-confirm-ok>
+                    Confirm
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('confirmationModal');
+
+            if (!modal) {
+                return;
+            }
+
+            const titleTarget = modal.querySelector('[data-confirm-title]');
+            const messageTarget = modal.querySelector('[data-confirm-message]');
+            const okButton = modal.querySelector('[data-confirm-ok]');
+            const cancelTargets = modal.querySelectorAll('[data-confirm-cancel]');
+            let resolver = null;
+
+            const closeModal = (result) => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('overflow-hidden');
+
+                if (resolver) {
+                    resolver(result);
+                    resolver = null;
+                }
+            };
+
+            window.confirmAction = ({
+                title = 'Confirm Action',
+                message = 'Are you sure you want to continue?',
+                confirmText = 'Confirm',
+            } = {}) => {
+                titleTarget.textContent = title;
+                messageTarget.textContent = message;
+                okButton.textContent = confirmText;
+
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('overflow-hidden');
+
+                setTimeout(() => okButton.focus(), 50);
+
+                return new Promise((resolve) => {
+                    resolver = resolve;
+                });
+            };
+
+            okButton.addEventListener('click', () => closeModal(true));
+            cancelTargets.forEach((target) => {
+                target.addEventListener('click', () => closeModal(false));
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+                    closeModal(false);
+                }
+            });
+
+            document.querySelectorAll('form[data-confirm-message]').forEach((form) => {
+                form.addEventListener('submit', async (event) => {
+                    if (form.dataset.confirmed === 'true') {
+                        form.dataset.confirmed = 'false';
+                        return;
+                    }
+
+                    event.preventDefault();
+
+                    const confirmed = await window.confirmAction({
+                        title: form.dataset.confirmTitle || 'Confirm Action',
+                        message: form.dataset.confirmMessage,
+                        confirmText: form.dataset.confirmButton || 'Confirm',
+                    });
+
+                    if (confirmed) {
+                        form.dataset.confirmed = 'true';
+                        form.requestSubmit();
+                    }
+                });
+            });
+        });
+    </script>
+
 </body>
 
 </html>

@@ -1,97 +1,110 @@
 <x-layout title="Edit Section">
 
-    <div class="max-w-4xl mx-auto">
+    <div class="mb-8">
 
-        <div class="mb-8">
+        <a href="{{ route('sections.index') }}"
+            class="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-slate-300 transition hover:bg-white/10">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Sections
+        </a>
 
-            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full
-            bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-sm">
+        <div class="mt-6 inline-flex items-center gap-2 rounded-full border border-cyan-500/20 bg-cyan-500/10 px-4 py-2 text-sm text-cyan-300">
+            <i class="fa-solid fa-layer-group"></i>
+            Admin Section Editor
+        </div>
 
-                <i class="fa-solid fa-layer-group"></i>
-                Section Management
+        <h1 class="mt-4 text-5xl font-bold text-white">
+            Edit Section
+        </h1>
+
+        <p class="mt-2 text-slate-400">
+            Update section information and academic details.
+        </p>
+
+    </div>
+
+    <div class="rounded-[32px] border border-white/10 bg-white/5 p-8 shadow-[0_20px_60px_rgba(0,0,0,.35)] backdrop-blur-2xl">
+
+        <form action="{{ route('sections.update', $section->id) }}" method="POST" class="space-y-6">
+
+            @csrf
+            @method('PUT')
+
+            <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+
+                <div>
+                    <label for="name" class="block text-sm font-medium text-slate-300">
+                        Section Name
+                    </label>
+
+                    <input id="name" type="text" name="name" value="{{ old('name', $section->name) }}"
+                        placeholder="Ex. III-BSIT-A" required
+                        oninput="this.value = this.value.toUpperCase()"
+                        class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-900/60 px-4 py-3 text-white focus:border-cyan-500 focus:ring-cyan-500">
+
+                    @error('name')
+                        <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="semester" class="block text-sm font-medium text-slate-300">
+                        Semester
+                    </label>
+
+                    <select id="semester" name="semester" required
+                        class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-900/60 px-4 py-3 text-white focus:border-cyan-500 focus:ring-cyan-500">
+
+                        @foreach(['1st Semester', '2nd Semester', 'Summer'] as $semester)
+
+                            <option value="{{ $semester }}" {{ old('semester', $section->semester) === $semester ? 'selected' : '' }}>
+                                {{ $semester }}
+                            </option>
+
+                        @endforeach
+
+                    </select>
+
+                    @error('semester')
+                        <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="lg:col-span-2">
+                    <label for="school_year" class="block text-sm font-medium text-slate-300">
+                        School Year
+                    </label>
+
+                    <input id="school_year" type="text" name="school_year" value="{{ old('school_year', $section->school_year) }}"
+                        placeholder="Ex. 2026-2027" pattern="\d{4}-\d{4}" required
+                        class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-900/60 px-4 py-3 text-white focus:border-cyan-500 focus:ring-cyan-500">
+
+                    <p class="mt-2 text-sm text-slate-500">
+                        Use format YYYY-YYYY.
+                    </p>
+
+                    @error('school_year')
+                        <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
+                    @enderror
+                </div>
 
             </div>
 
-            <h1 class="mt-4 text-5xl font-bold text-white">
-                Edit Section
-            </h1>
+            <div class="flex flex-col gap-4 sm:flex-row sm:justify-end">
 
-            <p class="mt-2 text-slate-400">
-                Update section information and academic details
-            </p>
+                <a href="{{ route('sections.index') }}"
+                    class="rounded-2xl border border-white/10 bg-white/5 px-6 py-3 text-center font-semibold text-slate-300 transition hover:bg-white/10">
+                    Cancel
+                </a>
 
-        </div>
+                <button type="submit"
+                    class="rounded-2xl border border-blue-500/20 bg-blue-500/10 px-6 py-3 font-semibold text-blue-300 shadow-lg shadow-blue-950/20 backdrop-blur-xl transition hover:bg-blue-500/20 hover:text-blue-200">
+                    Save Changes
+                </button>
 
-        <div class="bg-white/5 backdrop-blur-2xl
-        border border-white/10
-        rounded-[32px]
-        p-8 shadow-[0_20px_60px_rgba(0,0,0,.25)]">
+            </div>
 
-            <form action="{{ route('sections.update', $section->id) }}" method="POST">
-
-                @csrf
-                @method('PUT')
-
-                <div class="space-y-6">
-
-                    <div>
-                        <label class="block text-slate-300 mb-2">
-                            Section Name
-                        </label>
-
-                        <input type="text" name="name" value="{{ $section->name }}" placeholder="III-BSIT-A" required
-                            class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
-                            text-white px-4 py-3">
-                    </div>
-
-                    <div>
-                        <label class="block text-slate-300 mb-2">
-                            Semester
-                        </label>
-
-                        <input type="text" name="semester" value="{{ $section->semester }}" placeholder="1st Semester"
-                            required class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
-                            text-white px-4 py-3">
-                    </div>
-
-                    <div>
-                        <label class="block text-slate-300 mb-2">
-                            School Year
-                        </label>
-
-                        <input type="text" name="school_year" value="{{ $section->school_year }}"
-                            placeholder="2025-2026" required class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
-                            text-white px-4 py-3">
-                    </div>
-
-                </div>
-
-                <div class="flex justify-between items-center mt-10">
-
-                    <a href="{{ route('sections.index') }}" class="px-5 py-3 rounded-2xl
-                        bg-slate-800 border border-slate-700
-                        text-slate-300 hover:bg-slate-700 transition">
-
-                        <i class="fa-solid fa-arrow-left mr-2"></i>
-                        Back
-
-                    </a>
-
-                    <button type="submit" class="px-6 py-3 rounded-2xl
-                        bg-cyan-500/20 border border-cyan-500/20
-                        text-cyan-300 hover:bg-cyan-500/30
-                        transition-all duration-200 hover:scale-105">
-
-                        <i class="fa-solid fa-floppy-disk mr-2"></i>
-                        Update Section
-
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
+        </form>
 
     </div>
 

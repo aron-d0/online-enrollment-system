@@ -1,7 +1,7 @@
 <x-layout title="Student Management">
 
     <!-- Header -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8">
 
         <div>
 
@@ -23,7 +23,7 @@
 
         </div>
 
-        <div class="mt-4 md:mt-0">
+        <div class="mt-4 flex flex-col gap-3 md:mt-0 md:items-end">
 
             <div class="bg-white/5 backdrop-blur-xl border border-white/10
             rounded-3xl px-6 py-4">
@@ -37,6 +37,12 @@
                 </h2>
 
             </div>
+
+            <a href="{{ route('students.create') }}"
+                class="inline-flex items-center justify-center gap-2 rounded-2xl border border-blue-500/20 bg-blue-500/10 px-5 py-3 font-semibold text-blue-300 transition hover:bg-blue-500/20">
+                <i class="fa-solid fa-user-plus"></i>
+                Add Student
+            </a>
 
         </div>
 
@@ -149,7 +155,9 @@
                                 </a>
 
                                 <form method="POST" action="{{ route('students.destroy', $student) }}"
-                                    onsubmit="return confirm('Delete this student account? This will remove their login and student record.');">
+                                    data-confirm-title="Delete Student"
+                                    data-confirm-message="Delete this student account? This will remove their login and student record."
+                                    data-confirm-button="Delete">
                                     @csrf
                                     @method('DELETE')
 

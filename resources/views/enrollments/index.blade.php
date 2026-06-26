@@ -57,22 +57,22 @@
 
         <div class="rounded-3xl border border-white/10 bg-white/5 px-6 py-5">
             <p class="text-sm text-slate-400">Students</p>
-            <p class="mt-1 text-3xl font-bold text-white">{{ $enrollmentsByStudent->count() }}</p>
+            <p class="mt-1 text-3xl font-bold text-white" data-summary-count="students">{{ $enrollmentsByStudent->count() }}</p>
         </div>
 
         <div class="rounded-3xl border border-yellow-500/20 bg-yellow-500/10 px-6 py-5">
             <p class="text-sm text-yellow-300">Pending</p>
-            <p class="mt-1 text-3xl font-bold text-white">{{ $pendingCount }}</p>
+            <p class="mt-1 text-3xl font-bold text-white" data-summary-count="Pending">{{ $pendingCount }}</p>
         </div>
 
         <div class="rounded-3xl border border-emerald-500/20 bg-emerald-500/10 px-6 py-5">
             <p class="text-sm text-emerald-300">Approved</p>
-            <p class="mt-1 text-3xl font-bold text-white">{{ $approvedCount }}</p>
+            <p class="mt-1 text-3xl font-bold text-white" data-summary-count="Approved">{{ $approvedCount }}</p>
         </div>
 
         <div class="rounded-3xl border border-red-500/20 bg-red-500/10 px-6 py-5">
             <p class="text-sm text-red-300">Rejected</p>
-            <p class="mt-1 text-3xl font-bold text-white">{{ $rejectedCount }}</p>
+            <p class="mt-1 text-3xl font-bold text-white" data-summary-count="Rejected">{{ $rejectedCount }}</p>
         </div>
 
     </div>
@@ -131,27 +131,46 @@
 
                     </div>
 
-                    <div class="flex flex-wrap gap-2 text-sm">
+                    <div class="flex flex-wrap items-center gap-2 text-sm">
 
                         <span class="rounded-full bg-white/5 px-4 py-2 text-slate-300">
-                            {{ $studentEnrollments->count() }} Subjects
+                            <span data-student-count="total">{{ $studentEnrollments->count() }}</span> Subjects
                         </span>
 
                         <span class="rounded-full bg-yellow-500/10 px-4 py-2 text-yellow-300">
-                            {{ $studentEnrollments->where('status', 'Pending')->count() }} Pending
+                            <span data-student-count="Pending">{{ $studentEnrollments->where('status', 'Pending')->count() }}</span> Pending
                         </span>
 
                         <span class="rounded-full bg-emerald-500/10 px-4 py-2 text-emerald-300">
-                            {{ $studentEnrollments->where('status', 'Approved')->count() }} Approved
+                            <span data-student-count="Approved">{{ $studentEnrollments->where('status', 'Approved')->count() }}</span> Approved
                         </span>
 
                         <span class="rounded-full bg-red-500/10 px-4 py-2 text-red-300">
-                            {{ $studentEnrollments->where('status', 'Rejected')->count() }} Rejected
+                            <span data-student-count="Rejected">{{ $studentEnrollments->where('status', 'Rejected')->count() }}</span> Rejected
                         </span>
+
+                        <button type="button"
+                            data-remove-student-enrollments
+                            data-bulk-url="{{ route('enrollments.bulk-destroy') }}"
+                            class="rounded-full border border-red-500/20 bg-red-500/10 px-4 py-2 font-semibold text-red-300 transition hover:bg-red-500/20">
+                            <i class="fa-solid fa-trash mr-2"></i>
+                            Remove Student Enrollment
+                        </button>
+
+                        <button type="button"
+                            data-enrollment-toggle
+                            aria-expanded="false"
+                            title="Expand subjects"
+                            aria-label="Expand subjects for {{ $student->user->name }}"
+                            class="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-300 transition hover:bg-white/10">
+                            <i class="fa-solid fa-chevron-up rotate-180 transition-transform duration-200" data-toggle-icon></i>
+                        </button>
 
                     </div>
 
                 </div>
+
+                <div data-enrollment-panel class="hidden">
 
                 <div class="flex flex-col gap-3 border-b border-white/10 px-6 py-4 md:flex-row md:items-center md:justify-between">
 
@@ -175,7 +194,7 @@
                             data-bulk-url="{{ route('enrollments.bulk-status') }}"
                             disabled
                             class="bulk-action-button h-10 px-4 rounded-full bg-red-500/15 border border-red-500/20 text-red-300 hover:bg-red-500/25 transition disabled:opacity-40 disabled:cursor-not-allowed">
-                            <i class="fa-solid fa-ban mr-2"></i>
+                            <i class="fa-solid fa-xmark mr-2"></i>
                             Reject Selected
                         </button>
 
@@ -192,37 +211,66 @@
 
                 </div>
 
-                <div class="overflow-x-auto">
+                <div class="overflow-hidden">
 
-                    <table class="w-full min-w-[980px]">
+                    <table class="w-full table-fixed text-sm">
+
+                        <colgroup>
+                            <col class="w-[4%]">
+                            <col class="w-[9%]">
+                            <col class="w-[23%]">
+                            <col class="w-[6%]">
+                            <col class="w-[8%]">
+                            <col class="w-[8%]">
+                            <col class="w-[10%]">
+                            <col class="w-[9%]">
+                            <col class="w-[10%]">
+                            <col class="w-[13%]">
+                        </colgroup>
 
                         <thead>
 
                             <tr class="border-b border-white/10">
 
-                                <th class="px-6 py-5 text-left text-slate-300 font-semibold w-14">
+                                <th class="px-3 py-4 text-left text-slate-300 font-semibold">
                                     <input type="checkbox"
                                         class="student-select-all rounded border-slate-600 bg-slate-900 text-blue-500 focus:ring-blue-500"
                                         aria-label="Select all enrollments for {{ $student->user->name }}">
                                 </th>
 
-                                <th class="px-6 py-5 text-left text-slate-300 font-semibold">
-                                    Subject Code
+                                <th class="px-3 py-4 text-left text-slate-300 font-semibold">
+                                    Code
                                 </th>
 
-                                <th class="px-6 py-5 text-left text-slate-300 font-semibold">
+                                <th class="px-3 py-4 text-left text-slate-300 font-semibold">
                                     Subject
                                 </th>
 
-                                <th class="px-6 py-5 text-left text-slate-300 font-semibold">
+                                <th class="px-3 py-4 text-left text-slate-300 font-semibold">
                                     Units
                                 </th>
 
-                                <th class="px-6 py-5 text-left text-slate-300 font-semibold">
+                                <th class="px-3 py-4 text-left text-slate-300 font-semibold">
+                                    From
+                                </th>
+
+                                <th class="px-3 py-4 text-left text-slate-300 font-semibold">
+                                    To
+                                </th>
+
+                                <th class="px-3 py-4 text-left text-slate-300 font-semibold">
+                                    Days
+                                </th>
+
+                                <th class="px-3 py-4 text-left text-slate-300 font-semibold">
+                                    Room
+                                </th>
+
+                                <th class="px-3 py-4 text-left text-slate-300 font-semibold">
                                     Status
                                 </th>
 
-                                <th class="px-6 py-5 text-left text-slate-300 font-semibold w-[340px]">
+                                <th class="px-3 py-4 text-left text-slate-300 font-semibold">
                                     Actions
                                 </th>
 
@@ -235,76 +283,97 @@
                             @foreach($studentEnrollments as $enrollment)
 
                                 <tr class="border-b border-white/5 hover:bg-white/5 transition"
-                                    data-enrollment-row="{{ $enrollment->id }}">
+                                    data-enrollment-row="{{ $enrollment->id }}"
+                                    data-status="{{ $enrollment->status }}">
 
-                                    <td class="px-6 py-4">
+                                    <td class="px-3 py-3">
                                         <input type="checkbox"
                                             class="enrollment-checkbox rounded border-slate-600 bg-slate-900 text-blue-500 focus:ring-blue-500"
                                             value="{{ $enrollment->id }}"
                                             aria-label="Select {{ $enrollment->subject->code }}">
                                     </td>
 
-                                    <td class="px-6 py-4 text-cyan-300 font-medium">
+                                    <td class="px-3 py-3 text-cyan-300 font-medium break-words">
                                         {{ $enrollment->subject->code }}
                                     </td>
 
-                                    <td class="px-6 py-4 text-slate-200">
+                                    <td class="px-3 py-3 text-slate-200 leading-snug">
                                         {{ $enrollment->subject->title }}
                                     </td>
 
-                                    <td class="px-6 py-4 text-slate-200">
+                                    <td class="px-3 py-3 text-slate-200">
                                         {{ $enrollment->subject->units }}
                                     </td>
 
-                                    <td class="px-6 py-4">
+                                    <td class="px-3 py-3 text-slate-300">
+                                        {{ $enrollment->subject->timeFromForDisplay() }}
+                                    </td>
+
+                                    <td class="px-3 py-3 text-slate-300">
+                                        {{ $enrollment->subject->timeToForDisplay() }}
+                                    </td>
+
+                                    <td class="px-3 py-3 text-slate-300 break-words">
+                                        {{ $enrollment->subject->days ?? '—' }}
+                                    </td>
+
+                                    <td class="px-3 py-3 text-slate-300 break-words">
+                                        {{ $enrollment->subject->room ?? '—' }}
+                                    </td>
+
+                                    <td class="px-3 py-3">
                                         <span data-status-badge>
                                             @if($enrollment->status === 'Approved')
-                                                <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-sm">
+                                                <span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs">
                                                     Approved
                                                 </span>
                                             @elseif($enrollment->status === 'Rejected')
-                                                <span class="px-3 py-1 rounded-full bg-red-500/20 text-red-300 text-sm">
+                                                <span class="px-2.5 py-1 rounded-full bg-red-500/20 text-red-300 text-xs">
                                                     Rejected
                                                 </span>
                                             @else
-                                                <span class="px-3 py-1 rounded-full bg-yellow-500/20 text-yellow-300 text-sm">
+                                                <span class="px-2.5 py-1 rounded-full bg-yellow-500/20 text-yellow-300 text-xs">
                                                     Pending
                                                 </span>
                                             @endif
                                         </span>
                                     </td>
 
-                                    <td class="px-6 py-4">
+                                    <td class="px-3 py-3">
 
-                                        <div class="flex items-center gap-2 whitespace-nowrap">
+                                        <div class="flex flex-wrap items-center gap-1.5">
 
-                                            <div class="flex items-center gap-2" data-approval-actions>
+                                            <div class="flex items-center gap-1.5" data-approval-actions>
 
                                                 @if($enrollment->status === 'Pending')
 
                                                     <button type="button"
                                                         data-status-url="{{ route('enrollments.approve', $enrollment) }}"
                                                         data-status-action="Approved"
-                                                        class="h-10 px-4 rounded-full
+                                                        title="Approve"
+                                                        aria-label="Approve {{ $enrollment->subject->code }}"
+                                                        class="flex h-9 w-9 items-center justify-center rounded-full
                                                         bg-emerald-500/15 border border-emerald-500/20
                                                         text-emerald-300 hover:bg-emerald-500/25
                                                         transition-all duration-200 hover:scale-105">
 
-                                                        <i class="fa-solid fa-check mr-2"></i>
-                                                        Approve
+                                                        <i class="fa-solid fa-check"></i>
+                                                        <span class="sr-only">Approve</span>
 
                                                     </button>
 
                                                     <button type="button"
                                                         data-status-url="{{ route('enrollments.reject', $enrollment) }}"
                                                         data-status-action="Rejected"
-                                                        class="h-10 px-4 rounded-full
+                                                        title="Reject"
+                                                        aria-label="Reject {{ $enrollment->subject->code }}"
+                                                        class="flex h-9 w-9 items-center justify-center rounded-full
                                                         bg-red-500/15 border border-red-500/20
                                                         text-red-300 hover:bg-red-500/25
                                                         transition-all duration-200 hover:scale-105">
 
-                                                        <i class="fa-solid fa-xmark mr-2"></i>
-                                                        Reject
+                                                        <i class="fa-solid fa-xmark"></i>
+                                                        <span class="sr-only">Reject</span>
 
                                                     </button>
 
@@ -312,22 +381,19 @@
 
                                             </div>
 
-                                            <form method="POST" action="{{ route('enrollments.destroy', $enrollment) }}">
-
-                                                @csrf
-                                                @method('DELETE')
-
-                                                <button type="submit" onclick="return confirm('Delete this enrollment?')" class="h-10 px-4 rounded-full
+                                            <button type="button"
+                                                data-delete-url="{{ route('enrollments.destroy', $enrollment) }}"
+                                                title="Delete"
+                                                aria-label="Delete {{ $enrollment->subject->code }}"
+                                                class="flex h-9 w-9 items-center justify-center rounded-full
                                                 bg-slate-700/50 border border-slate-600
                                                 text-slate-300 hover:bg-slate-600
                                                 transition-all duration-200 hover:scale-105">
 
-                                                    <i class="fa-solid fa-trash mr-2"></i>
-                                                    Delete
+                                                <i class="fa-solid fa-trash"></i>
+                                                <span class="sr-only">Delete</span>
 
-                                                </button>
-
-                                            </form>
+                                            </button>
 
                                         </div>
 
@@ -340,6 +406,8 @@
                         </tbody>
 
                     </table>
+
+                </div>
 
                 </div>
 
@@ -368,7 +436,7 @@
                     Pending: 'bg-yellow-500/20 text-yellow-300',
                 };
 
-                return `<span class="px-3 py-1 rounded-full ${classes[status] ?? classes.Pending} text-sm">${status}</span>`;
+                return `<span class="px-2.5 py-1 rounded-full ${classes[status] ?? classes.Pending} text-xs">${status}</span>`;
             };
 
             const showToast = (message, type = 'success') => {
@@ -418,6 +486,59 @@
                 selectAll.indeterminate = checked.length > 0 && checked.length < checkboxes.length;
             };
 
+            const adjustCount = (selector, delta) => {
+                const target = document.querySelector(selector);
+
+                if (!target) {
+                    return;
+                }
+
+                target.textContent = Math.max(0, Number.parseInt(target.textContent, 10) + delta);
+            };
+
+            const adjustSummaryCount = (status, delta) => {
+                adjustCount(`[data-summary-count="${status}"]`, delta);
+            };
+
+            const adjustStudentCount = (group, status, delta) => {
+                const target = group.querySelector(`[data-student-count="${status}"]`);
+
+                if (!target) {
+                    return;
+                }
+
+                target.textContent = Math.max(0, Number.parseInt(target.textContent, 10) + delta);
+            };
+
+            const transitionRowStatus = (row, group, newStatus) => {
+                const oldStatus = row.dataset.status;
+
+                if (oldStatus === newStatus) {
+                    return;
+                }
+
+                adjustSummaryCount(oldStatus, -1);
+                adjustSummaryCount(newStatus, 1);
+                adjustStudentCount(group, oldStatus, -1);
+                adjustStudentCount(group, newStatus, 1);
+                row.dataset.status = newStatus;
+            };
+
+            const removeEnrollmentRow = (row, group) => {
+                const oldStatus = row.dataset.status;
+
+                adjustSummaryCount(oldStatus, -1);
+                adjustStudentCount(group, oldStatus, -1);
+                adjustStudentCount(group, 'total', -1);
+
+                row.remove();
+
+                if (!group.querySelector('[data-enrollment-row]')) {
+                    group.remove();
+                    adjustSummaryCount('students', -1);
+                }
+            };
+
             document.querySelectorAll('[data-status-action]').forEach((button) => {
                 button.addEventListener('click', async () => {
                     const row = button.closest('[data-enrollment-row]');
@@ -448,6 +569,7 @@
                         const payload = await response.json();
                         const status = payload.status ?? button.dataset.statusAction;
 
+                        transitionRowStatus(row, group, status);
                         statusTarget.innerHTML = statusBadge(status);
                         actions.innerHTML = '';
                         row.querySelector('.enrollment-checkbox').checked = false;
@@ -466,8 +588,75 @@
                 });
             });
 
+            document.querySelectorAll('[data-delete-url]').forEach((button) => {
+                button.addEventListener('click', async () => {
+                    const confirmed = await window.confirmAction({
+                        title: 'Delete Enrollment',
+                        message: 'Delete this enrollment?',
+                        confirmText: 'Delete',
+                    });
+
+                    if (!confirmed) {
+                        return;
+                    }
+
+                    const row = button.closest('[data-enrollment-row]');
+                    const group = button.closest('[data-student-enrollment-group]');
+
+                    button.disabled = true;
+                    button.classList.add('opacity-60', 'cursor-wait');
+
+                    try {
+                        const response = await fetch(button.dataset.deleteUrl, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json',
+                            },
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('Request failed');
+                        }
+
+                        const payload = await response.json();
+
+                        removeEnrollmentRow(row, group);
+                        updateBulkButtons(group);
+                        syncSelectAll(group);
+                        showToast(payload.message ?? 'Enrollment deleted successfully.');
+                    } catch (error) {
+                        button.disabled = false;
+                        button.classList.remove('opacity-60', 'cursor-wait');
+                        showToast('Unable to delete enrollment. Please try again.', 'error');
+                    }
+                });
+            });
+
             document.querySelectorAll('[data-student-enrollment-group]').forEach((group) => {
                 const selectAll = group.querySelector('.student-select-all');
+                const toggle = group.querySelector('[data-enrollment-toggle]');
+                const panel = group.querySelector('[data-enrollment-panel]');
+
+                toggle?.addEventListener('click', () => {
+                    const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+                    const nextExpandedState = !isExpanded;
+                    const icon = toggle.querySelector('[data-toggle-icon]');
+
+                    toggle.setAttribute('aria-expanded', nextExpandedState.toString());
+                    toggle.setAttribute(
+                        'title',
+                        nextExpandedState ? 'Collapse subjects' : 'Expand subjects'
+                    );
+                    toggle.setAttribute(
+                        'aria-label',
+                        `${nextExpandedState ? 'Collapse' : 'Expand'} subjects for this student`
+                    );
+                    panel?.classList.toggle('hidden', !nextExpandedState);
+
+                    icon?.classList.toggle('rotate-180', !nextExpandedState);
+                });
 
                 selectAll?.addEventListener('change', () => {
                     group.querySelectorAll('.enrollment-checkbox').forEach((enrollmentCheckbox) => {
@@ -485,6 +674,65 @@
                     });
                 });
 
+                group.querySelector('[data-remove-student-enrollments]')?.addEventListener('click', async (event) => {
+                    const button = event.currentTarget;
+                    const ids = Array.from(group.querySelectorAll('[data-enrollment-row]'))
+                        .map((row) => row.dataset.enrollmentRow);
+
+                    if (ids.length === 0) {
+                        showToast('This student has no enrollments to remove.', 'error');
+                        return;
+                    }
+
+                    const confirmed = await window.confirmAction({
+                        title: 'Remove Student Enrollment',
+                        message: 'Remove all subject enrollments for this student?',
+                        confirmText: 'Remove',
+                    });
+
+                    if (!confirmed) {
+                        return;
+                    }
+
+                    button.disabled = true;
+                    button.classList.add('opacity-60', 'cursor-wait');
+
+                    try {
+                        const response = await fetch(button.dataset.bulkUrl, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                enrollment_ids: ids,
+                            }),
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('Request failed');
+                        }
+
+                        const payload = await response.json();
+
+                        ids.forEach((id) => {
+                            const row = group.querySelector(`[data-enrollment-row="${id}"]`);
+
+                            if (row) {
+                                removeEnrollmentRow(row, group);
+                            }
+                        });
+
+                        showToast(payload.message ?? 'Student enrollment removed successfully.');
+                    } catch (error) {
+                        button.disabled = false;
+                        button.classList.remove('opacity-60', 'cursor-wait');
+                        showToast('Unable to remove student enrollment. Please try again.', 'error');
+                    }
+                });
+
                 group.querySelectorAll('[data-bulk-action]').forEach((button) => {
                     button.addEventListener('click', async () => {
                         const ids = selectedIds(group);
@@ -496,8 +744,16 @@
 
                         const action = button.dataset.bulkAction;
 
-                        if (action === 'Delete' && !confirm('Delete the selected enrollments?')) {
-                            return;
+                        if (action === 'Delete') {
+                            const confirmed = await window.confirmAction({
+                                title: 'Delete Selected Enrollments',
+                                message: 'Delete the selected enrollments?',
+                                confirmText: 'Delete',
+                            });
+
+                            if (!confirmed) {
+                                return;
+                            }
                         }
 
                         group.querySelectorAll('.bulk-action-button').forEach((actionButton) => {
@@ -535,10 +791,11 @@
                                 }
 
                                 if (action === 'Delete') {
-                                    row.remove();
+                                    removeEnrollmentRow(row, group);
                                     return;
                                 }
 
+                                transitionRowStatus(row, group, payload.status ?? action);
                                 row.querySelector('[data-status-badge]').innerHTML = statusBadge(payload.status ?? action);
                                 row.querySelector('[data-approval-actions]').innerHTML = '';
                                 row.querySelector('.enrollment-checkbox').checked = false;

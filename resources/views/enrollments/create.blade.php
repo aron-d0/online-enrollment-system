@@ -109,11 +109,11 @@
                     </td>
 
                     <td>
-                        {{ $subject->time_from }}
+                        {{ $subject->timeFromForDisplay() }}
                     </td>
 
                     <td>
-                        {{ $subject->time_to }}
+                        {{ $subject->timeToForDisplay() }}
                     </td>
 
                     <td>

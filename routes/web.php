@@ -54,6 +54,16 @@ Route::middleware('auth')->group(function () {
         )->name('students.index');
 
         Route::get(
+            '/admin/students/create',
+            [StudentController::class, 'create']
+        )->name('students.create');
+
+        Route::post(
+            '/admin/students',
+            [StudentController::class, 'store']
+        )->name('students.store');
+
+        Route::get(
             '/admin/students/{student}/edit',
             [StudentController::class, 'edit']
         )->name('students.edit');
@@ -110,6 +120,16 @@ Route::middleware('auth')->group(function () {
 
         Route::resource('subjects', SubjectController::class);
 
+        Route::post(
+            '/admin/subjects/import',
+            [SubjectController::class, 'import']
+        )->name('subjects.import');
+
+        Route::delete(
+            '/admin/subjects/bulk',
+            [SubjectController::class, 'bulkDestroy']
+        )->name('subjects.bulk-destroy');
+
         Route::resource('sections', SectionController::class);
 
     });
@@ -133,10 +153,6 @@ Route::middleware('auth')->group(function () {
         [EnrollmentController::class, 'exportCsv']
     )->name('enrollments.export.csv');
 
-    Route::post(
-        '/admin/subjects/import',
-        [SubjectController::class, 'import']
-    )->name('subjects.import');
 });
 
 require __DIR__ . '/auth.php';

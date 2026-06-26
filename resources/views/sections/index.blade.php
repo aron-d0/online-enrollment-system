@@ -38,6 +38,24 @@
 
     </div>
 
+    @if(session('success'))
+
+        <div class="mb-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-5 py-4 text-emerald-300">
+            <i class="fa-solid fa-circle-check mr-2"></i>
+            {{ session('success') }}
+        </div>
+
+    @endif
+
+    @if(session('error'))
+
+        <div class="mb-6 rounded-2xl border border-red-500/20 bg-red-500/10 px-5 py-4 text-red-300">
+            <i class="fa-solid fa-triangle-exclamation mr-2"></i>
+            {{ session('error') }}
+        </div>
+
+    @endif
+
     <!-- Actions -->
     <div class="flex justify-end mb-8">
 
@@ -109,6 +127,18 @@
 
                         </div>
 
+                        <div class="flex justify-between">
+
+                            <span class="text-slate-400">
+                                Subjects
+                            </span>
+
+                            <span class="text-white font-medium">
+                                {{ $section->subjects_count }}
+                            </span>
+
+                        </div>
+
                     </div>
 
                     <div class="flex gap-3 mt-6">
@@ -122,21 +152,41 @@
 
                         </a>
 
-                        <form action="{{ route('sections.destroy', $section->id) }}" method="POST" class="flex-1">
+                        @if($section->subjects_count > 0)
 
-                            @csrf
-                            @method('DELETE')
+                            <button type="button" disabled
+                                title="Move or delete this section's subjects first."
+                                class="flex-1 px-4 py-3 rounded-2xl
+                                    bg-slate-700/30 border border-slate-600/50
+                                    text-slate-500 cursor-not-allowed">
 
-                            <button type="submit" onclick="return confirm('Delete this section?')" class="w-full px-4 py-3 rounded-2xl
-                                        bg-red-500/20 border border-red-500/20
-                                        text-red-300 hover:bg-red-500/30 transition">
-
-                                <i class="fa-solid fa-trash mr-2"></i>
-                                Delete
+                                <i class="fa-solid fa-lock mr-2"></i>
+                                In Use
 
                             </button>
 
-                        </form>
+                        @else
+
+                            <form action="{{ route('sections.destroy', $section->id) }}" method="POST" class="flex-1"
+                                data-confirm-title="Delete Section"
+                                data-confirm-message="Delete this section?"
+                                data-confirm-button="Delete">
+
+                                @csrf
+                                @method('DELETE')
+
+                                <button type="submit" class="w-full px-4 py-3 rounded-2xl
+                                            bg-red-500/20 border border-red-500/20
+                                            text-red-300 hover:bg-red-500/30 transition">
+
+                                    <i class="fa-solid fa-trash mr-2"></i>
+                                    Delete
+
+                                </button>
+
+                            </form>
+
+                        @endif
 
                     </div>
 

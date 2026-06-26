@@ -64,6 +64,24 @@ class AdminEnrollmentManagementTest extends TestCase
         ]);
     }
 
+    public function test_admin_can_delete_enrollment_without_page_reload_response(): void
+    {
+        [$admin, $enrollment] = $this->makeAdminAndEnrollment();
+
+        $response = $this->actingAs($admin)
+            ->deleteJson(route('enrollments.destroy', $enrollment));
+
+        $response->assertOk()
+            ->assertJson([
+                'message' => 'Enrollment deleted successfully.',
+                'enrollment_id' => $enrollment->id,
+            ]);
+
+        $this->assertDatabaseMissing('enrollments', [
+            'id' => $enrollment->id,
+        ]);
+    }
+
     public function test_admin_can_bulk_approve_selected_enrollments(): void
     {
         [$admin, $firstEnrollment] = $this->makeAdminAndEnrollment();
@@ -151,6 +169,47 @@ class AdminEnrollmentManagementTest extends TestCase
         $this->assertDatabaseMissing('enrollments', [
             'id' => $secondEnrollment->id,
         ]);
+    }
+
+    public function test_admin_can_export_enrollments_as_grouped_json(): void
+    {
+        [$admin, $enrollment] = $this->makeAdminAndEnrollment();
+
+        $response = $this->actingAs($admin)
+            ->get(route('enrollments.export.json'));
+
+        $response->assertOk();
+        $response->assertHeader('Content-Type', 'application/json');
+        $response->assertJsonPath('total_students', 1);
+        $response->assertJsonPath('total_enrollments', 1);
+        $response->assertJsonPath('totals_by_status.pending', 1);
+        $response->assertJsonPath('students.0.student_number', $enrollment->student->student_number);
+        $response->assertJsonPath('students.0.email', $enrollment->student->user->email);
+        $response->assertJsonPath('students.0.enrollments.0.subject_code', $enrollment->subject->code);
+        $response->assertJsonPath('students.0.enrollments.0.section', $enrollment->subject->section->name);
+    }
+
+    public function test_admin_can_export_enrollments_as_spreadsheet_friendly_csv(): void
+    {
+        [$admin, $enrollment] = $this->makeAdminAndEnrollment();
+
+        $response = $this->actingAs($admin)
+            ->get(route('enrollments.export.csv'));
+
+        $response->assertOk();
+        $response->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
+
+        $csv = $response->streamedContent();
+
+        $this->assertStringContainsString(
+            '"Student Number","Student Name",Email,Course,"Year Level",Section,Semester,"School Year","Subject Code","Subject Title",Schedule,Units,Status,"Enrolled At"',
+            $csv
+        );
+
+        $this->assertStringContainsString($enrollment->student->student_number, $csv);
+        $this->assertStringContainsString($enrollment->student->user->email, $csv);
+        $this->assertStringContainsString($enrollment->subject->section->name, $csv);
+        $this->assertStringContainsString($enrollment->subject->code, $csv);
     }
 
     /**
