@@ -1,45 +1,42 @@
 <x-layout title="Create Subject">
 
-    <div class="max-w-5xl mx-auto">
+    <div class="mb-8">
 
-        <div class="mb-8">
+        <a href="{{ route('subjects.index') }}"
+            class="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-slate-300 transition hover:bg-white/10">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Subjects
+        </a>
 
-            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full
-            bg-blue-500/10 border border-blue-500/20 text-blue-300 text-sm">
-
-                <i class="fa-solid fa-book-medical"></i>
-                Subject Management
-
-            </div>
-
-            <h1 class="mt-4 text-5xl font-bold text-white">
-                Create Subject
-            </h1>
-
-            <p class="mt-2 text-slate-400">
-                Add a new subject to the enrollment system
-            </p>
-
+        <div class="mt-6 inline-flex items-center gap-2 rounded-full border border-blue-500/20 bg-blue-500/10 px-4 py-2 text-sm text-blue-300">
+            <i class="fa-solid fa-book-medical"></i>
+            Admin Subject Creator
         </div>
 
-        <div class="bg-white/5 backdrop-blur-2xl
-        border border-white/10
-        rounded-[32px]
-        p-8 shadow-[0_20px_60px_rgba(0,0,0,.25)]">
+        <h1 class="mt-4 text-5xl font-bold text-white">
+            Create Subject
+        </h1>
 
-            <form action="{{ route('subjects.store') }}" method="POST">
+        <p class="mt-2 text-slate-400">
+            Add a new subject to the enrollment system.
+        </p>
 
-                @csrf
+    </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="rounded-[32px] border border-white/10 bg-white/5 p-8 shadow-[0_20px_60px_rgba(0,0,0,.35)] backdrop-blur-2xl">
+
+        <form action="{{ route('subjects.store') }}" method="POST" class="space-y-6">
+
+            @csrf
+
+            <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
 
                     <div>
-                        <label class="block text-slate-300 mb-2">
+                        <label class="block text-sm font-medium text-slate-300">
                             Section
                         </label>
 
-                        <select name="section_id" required class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
-                            text-white px-4 py-3">
+                        <select name="section_id" required class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-900/60 px-4 py-3 text-white focus:border-blue-500 focus:ring-blue-500">
 
                             <option value="" disabled {{ old('section_id') ? '' : 'selected' }}>
                                 Select section
@@ -61,14 +58,13 @@
                     </div>
 
                     <div>
-                        <label class="block text-slate-300 mb-2">
+                        <label class="block text-sm font-medium text-slate-300">
                             Subject Code
                         </label>
 
                         <input type="text" name="code" value="{{ old('code') }}" placeholder="Ex. LN01_ELEC1" required
                             oninput="this.value = this.value.toUpperCase()"
-                            class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
-                            text-white px-4 py-3">
+                            class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-900/60 px-4 py-3 text-white focus:border-blue-500 focus:ring-blue-500">
 
                         @error('code')
                             <p class="mt-2 text-sm text-red-300">{{ $message }}</p>
@@ -76,13 +72,12 @@
                     </div>
 
                     <div>
-                        <label class="block text-slate-300 mb-2">
+                        <label class="block text-sm font-medium text-slate-300">
                             Subject Title
                         </label>
 
                         <input type="text" name="title" value="{{ old('title') }}" placeholder="Ex. Web Systems and Technologies 2" required
-                            class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
-                            text-white px-4 py-3">
+                            class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-900/60 px-4 py-3 text-white focus:border-blue-500 focus:ring-blue-500">
 
                         @error('title')
                             <p class="mt-2 text-sm text-red-300">{{ $message }}</p>
@@ -90,13 +85,12 @@
                     </div>
 
                     <div>
-                        <label class="block text-slate-300 mb-2">
+                        <label class="block text-sm font-medium text-slate-300">
                             Units
                         </label>
 
                         <input type="number" name="units" value="{{ old('units') }}" min="1" max="6" placeholder="Ex. 3" required
-                            class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
-                            text-white px-4 py-3">
+                            class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-900/60 px-4 py-3 text-white focus:border-blue-500 focus:ring-blue-500">
 
                         @error('units')
                             <p class="mt-2 text-sm text-red-300">{{ $message }}</p>
@@ -104,14 +98,13 @@
                     </div>
 
                     <div>
-                        <label class="block text-slate-300 mb-2">
+                        <label class="block text-sm font-medium text-slate-300">
                             Days
                         </label>
 
                         <input type="text" name="days" value="{{ old('days') }}" placeholder="Ex. MWF" required
                             oninput="this.value = this.value.toUpperCase()"
-                            class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
-                            text-white px-4 py-3">
+                            class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-900/60 px-4 py-3 text-white focus:border-blue-500 focus:ring-blue-500">
 
                         @error('days')
                             <p class="mt-2 text-sm text-red-300">{{ $message }}</p>
@@ -119,14 +112,13 @@
                     </div>
 
                     <div>
-                        <label class="block text-slate-300 mb-2">
+                        <label class="block text-sm font-medium text-slate-300">
                             Room
                         </label>
 
                         <input type="text" name="room" value="{{ old('room') }}" placeholder="Ex. ITRM 3" required
                             oninput="this.value = this.value.toUpperCase()"
-                            class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
-                            text-white px-4 py-3">
+                            class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-900/60 px-4 py-3 text-white focus:border-blue-500 focus:ring-blue-500">
 
                         @error('room')
                             <p class="mt-2 text-sm text-red-300">{{ $message }}</p>
@@ -134,13 +126,12 @@
                     </div>
 
                     <div>
-                        <label class="block text-slate-300 mb-2">
+                        <label class="block text-sm font-medium text-slate-300">
                             Time From
                         </label>
 
                         <input type="time" name="time_from" value="{{ old('time_from') }}" required
-                            class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
-                            text-white px-4 py-3">
+                            class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-900/60 px-4 py-3 text-white focus:border-blue-500 focus:ring-blue-500">
 
                         @error('time_from')
                             <p class="mt-2 text-sm text-red-300">{{ $message }}</p>
@@ -148,13 +139,12 @@
                     </div>
 
                     <div>
-                        <label class="block text-slate-300 mb-2">
+                        <label class="block text-sm font-medium text-slate-300">
                             Time To
                         </label>
 
                         <input type="time" name="time_to" value="{{ old('time_to') }}" required
-                            class="w-full rounded-2xl bg-slate-900/60 border border-slate-700
-                            text-white px-4 py-3">
+                            class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-900/60 px-4 py-3 text-white focus:border-blue-500 focus:ring-blue-500">
 
                         @error('time_to')
                             <p class="mt-2 text-sm text-red-300">{{ $message }}</p>
@@ -163,32 +153,21 @@
 
                 </div>
 
-                <div class="flex justify-between items-center mt-10">
+            <div class="flex flex-col gap-4 sm:flex-row sm:justify-end">
 
-                    <a href="{{ route('subjects.index') }}" class="px-5 py-3 rounded-2xl
-                        bg-slate-800 border border-slate-700
-                        text-slate-300 hover:bg-slate-700 transition">
+                <a href="{{ route('subjects.index') }}"
+                    class="rounded-2xl border border-white/10 bg-white/5 px-6 py-3 text-center font-semibold text-slate-300 transition hover:bg-white/10">
+                    Cancel
+                </a>
 
-                        <i class="fa-solid fa-arrow-left mr-2"></i>
-                        Back
+                <button type="submit"
+                    class="rounded-2xl border border-blue-500/20 bg-blue-500/10 px-6 py-3 font-semibold text-blue-300 shadow-lg shadow-blue-950/20 backdrop-blur-xl transition hover:bg-blue-500/20 hover:text-blue-200">
+                    Create Subject
+                </button>
 
-                    </a>
+            </div>
 
-                    <button type="submit" class="px-6 py-3 rounded-2xl
-                        bg-blue-500/20 border border-blue-500/20
-                        text-blue-300 hover:bg-blue-500/30
-                        transition-all duration-200 hover:scale-105">
-
-                        <i class="fa-solid fa-floppy-disk mr-2"></i>
-                        Save Subject
-
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
+        </form>
 
     </div>
 

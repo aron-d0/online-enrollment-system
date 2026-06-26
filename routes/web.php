@@ -98,16 +98,6 @@ Route::middleware('auth')->group(function () {
             [EnrollmentController::class, 'destroy']
         )->name('enrollments.destroy');
 
-        // Route::get(
-        //     '/admin/manual-enrollment',
-        //     [EnrollmentController::class, 'create']
-        // )->name('enrollments.create');
-
-        // Route::post(
-        //     '/admin/manual-enrollment',
-        //     [EnrollmentController::class, 'adminStore']
-        // )->name('enrollments.admin.store');
-
         Route::patch(
             '/admin/enrollments/{enrollment}/approve',
             [EnrollmentController::class, 'approve']

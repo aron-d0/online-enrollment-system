@@ -3,29 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Enrollment;
-use App\Models\Student;
-use App\Models\Section;
-use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class EnrollmentController extends Controller
 {
-    // public function create()
-    // {
-    //     $students = Student::with('user')->get();
-
-    //     $sections = Section::all();
-
-    //     return view(
-    //         'enrollments.create',
-    //         compact(
-    //             'students',
-    //             'sections'
-    //         )
-    //     );
-    // }
     public function index()
     {
         $enrollments = Enrollment::with([
@@ -75,20 +58,7 @@ class EnrollmentController extends Controller
                 'Enrollment completed successfully.'
             );
     }
-    // public function reset($studentId)
-    // {
-    //     Enrollment::where(
-    //         'student_id',
-    //         $studentId
-    //     )->delete();
 
-    //     return redirect()
-    //         ->route('enrollments.index')
-    //         ->with(
-    //             'success',
-    //             'Enrollment reset successfully.'
-    //         );
-    // }
     public function exportJson()
     {
         $enrollments = $this->enrollmentExportQuery();
