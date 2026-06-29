@@ -37,7 +37,8 @@
                 pattern="[0-9]{2}-[A-Za-z]{2}-[0-9]{4}"
                 maxlength="10"
                 title="Use the specified format: 22-LN-1234."
-                placeholder="Ex. 22-LN-1234" oninput="this.value = this.value.toUpperCase()" />
+                placeholder="Ex. 22-LN-1234"
+                data-student-number-format />
 
             <x-input-error :messages="$errors->get('student_number')" class="mt-2" />
         </div>
