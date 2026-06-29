@@ -52,7 +52,7 @@ class StudentController extends Controller
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ], [
-            'student_number.regex' => 'Student number must follow the format 22-LN-1234: two digits, campus code, then four digits.',
+            'student_number.regex' => 'Use the specified format: 22-LN-1234.',
         ]);
 
         if (User::whereRaw('LOWER(name) = ?', [Str::lower($request->name)])->exists()) {
@@ -134,7 +134,7 @@ class StudentController extends Controller
             ],
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
         ], [
-            'student_number.regex' => 'Student number must follow the format 22-LN-1234: two digits, campus code, then four digits.',
+            'student_number.regex' => 'Use the specified format: 22-LN-1234.',
         ]);
 
         if (

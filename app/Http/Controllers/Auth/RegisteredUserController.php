@@ -61,7 +61,7 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ], [
             'name.regex' => 'Full name may only contain letters, spaces, periods, hyphens, and apostrophes.',
-            'student_number.regex' => 'Student number must follow the format 22-LN-1234: two digits, campus code, then four digits.',
+            'student_number.regex' => 'Use the specified format: 22-LN-1234.',
             'email_username.regex' => 'Email may only contain letters, numbers, dots, underscores, percent signs, plus signs, and hyphens before @psu.edu.ph.',
         ]);
 
