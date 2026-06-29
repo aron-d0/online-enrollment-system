@@ -103,6 +103,19 @@
 
             @php
                 $student = $studentEnrollments->first()->student;
+                $studentSections = $studentEnrollments
+                    ->pluck('subject.section')
+                    ->filter()
+                    ->unique('id')
+                    ->values();
+
+                $studentSectionLabel = $studentSections->count() === 1
+                    ? $studentSections->first()->name
+                    : ($studentSections->count() > 1 ? 'Multiple Sections' : '—');
+
+                $studentTermLabel = $studentSections->count() === 1
+                    ? $studentSections->first()->semester . ' · ' . $studentSections->first()->school_year
+                    : ($studentSections->count() > 1 ? 'Multiple Terms' : '—');
             @endphp
 
             <section class="overflow-hidden rounded-[32px]
@@ -127,6 +140,13 @@
                             <p class="text-sm text-slate-400">
                                 {{ $student->student_number }} · {{ $student->course }} · Year {{ $student->year_level }}
                             </p>
+
+                            <p class="mt-1 text-sm text-cyan-300">
+                                <i class="fa-solid fa-layer-group mr-1"></i>
+                                Section: {{ $studentSectionLabel }}
+                                <span class="text-slate-500">·</span>
+                                {{ $studentTermLabel }}
+                            </p>
                         </div>
 
                     </div>
@@ -135,6 +155,10 @@
 
                         <span class="rounded-full bg-white/5 px-4 py-2 text-slate-300">
                             <span data-student-count="total">{{ $studentEnrollments->count() }}</span> Subjects
+                        </span>
+
+                        <span class="rounded-full bg-cyan-500/10 px-4 py-2 text-cyan-300">
+                            {{ $studentSectionLabel }}
                         </span>
 
                         <span class="rounded-full bg-yellow-500/10 px-4 py-2 text-yellow-300">

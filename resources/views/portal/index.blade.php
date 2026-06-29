@@ -13,6 +13,34 @@
 
 @endif
 
+@if(session('error'))
+
+    <div class="mb-6 p-4 rounded-2xl
+    bg-red-500/10 border border-red-500/20
+    text-red-300">
+
+        <i class="fa-solid fa-triangle-exclamation mr-2"></i>
+
+        {{ session('error') }}
+
+    </div>
+
+@endif
+
+@if($errors->any())
+
+    <div class="mb-6 p-4 rounded-2xl
+    bg-red-500/10 border border-red-500/20
+    text-red-300">
+
+        <i class="fa-solid fa-triangle-exclamation mr-2"></i>
+
+        {{ $errors->first() }}
+
+    </div>
+
+@endif
+
 <!-- Header -->
 
 <div class="mb-8">
@@ -90,6 +118,26 @@ rounded-[32px] p-8 mb-8">
                     </p>
                 </div>
 
+                <div>
+                    <p class="text-slate-400 text-sm">
+                        Enrolled Section
+                    </p>
+
+                    <p class="text-white font-semibold">
+                        {{ $enrolledSectionLabel }}
+                    </p>
+                </div>
+
+                <div>
+                    <p class="text-slate-400 text-sm">
+                        Term
+                    </p>
+
+                    <p class="text-white font-semibold">
+                        {{ $enrolledTermLabel }}
+                    </p>
+                </div>
+
             </div>
 
         </div>
@@ -151,6 +199,10 @@ rounded-[32px] p-8 mb-8">
                     </th>
 
                     <th class="px-6 py-4 text-left text-slate-300">
+                        SECTION
+                    </th>
+
+                    <th class="px-6 py-4 text-left text-slate-300">
                         UNITS
                     </th>
 
@@ -190,6 +242,18 @@ rounded-[32px] p-8 mb-8">
 
                         <td class="px-6 py-4 text-white">
                             {{ $enrollment->subject->title }}
+                        </td>
+
+                        <td class="px-6 py-4 text-slate-300">
+                            <div class="font-semibold text-slate-200">
+                                {{ $enrollment->subject->section?->name ?? '—' }}
+                            </div>
+
+                            <div class="text-xs text-slate-500">
+                                {{ $enrollment->subject->section?->semester ?? '—' }}
+                                ·
+                                {{ $enrollment->subject->section?->school_year ?? '—' }}
+                            </div>
                         </td>
 
                         <td class="px-6 py-4 text-slate-300">
@@ -251,7 +315,7 @@ rounded-[32px] p-8 mb-8">
 
                     <tr>
 
-                        <td colspan="8" class="text-center py-10 text-slate-500">
+                        <td colspan="9" class="text-center py-10 text-slate-500">
 
                             No enrolled subjects yet.
 

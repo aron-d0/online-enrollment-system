@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Enrollment;
+use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -13,7 +14,7 @@ class EnrollmentController extends Controller
     {
         $enrollments = Enrollment::with([
             'student.user',
-            'subject'
+            'subject.section'
         ])
             ->join('students', 'enrollments.student_id', '=', 'students.id')
             ->join('users', 'students.user_id', '=', 'users.id')
@@ -33,7 +34,33 @@ class EnrollmentController extends Controller
     {
         $student = auth()->user()->student;
 
-        $subjectIds = $request->subjects ?? [];
+        $validated = $request->validate([
+            'section_id' => ['required', 'integer', 'exists:sections,id'],
+            'subjects' => ['required', 'array', 'min:1'],
+            'subjects.*' => ['integer', 'exists:subjects,id'],
+        ]);
+
+        if ($student->enrollments()->exists()) {
+            return redirect()
+                ->route('portal')
+                ->with('error', 'You already have a finalized enrollment record.');
+        }
+
+        $subjectIds = collect($validated['subjects'])
+            ->unique()
+            ->values();
+
+        $validSubjectCount = Subject::whereIn('id', $subjectIds)
+            ->where('section_id', $validated['section_id'])
+            ->count();
+
+        if ($validSubjectCount !== $subjectIds->count()) {
+            return redirect()
+                ->route('portal', ['section_id' => $validated['section_id']])
+                ->withErrors([
+                    'subjects' => 'Selected subjects must belong to the selected section.',
+                ]);
+        }
 
         foreach ($subjectIds as $subjectId) {
 
@@ -51,7 +78,7 @@ class EnrollmentController extends Controller
         return redirect()
             ->route(
                 'portal',
-                ['section_id' => $request->section_id]
+                ['section_id' => $validated['section_id']]
             )
             ->with(
                 'success',

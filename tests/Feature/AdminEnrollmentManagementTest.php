@@ -24,6 +24,7 @@ class AdminEnrollmentManagementTest extends TestCase
         $response->assertSee('Enrollments');
         $response->assertSee($enrollment->student->user->name);
         $response->assertSee($enrollment->subject->code);
+        $response->assertSee($enrollment->subject->section->name);
     }
 
     public function test_admin_can_approve_enrollment_without_page_reload_response(): void
