@@ -45,12 +45,14 @@ class StudentController extends Controller
 
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'student_number' => ['required', 'string', 'max:255', 'unique:students,student_number'],
+            'student_number' => ['required', 'string', 'regex:/^\d{2}-[A-Z]{2}-\d{4}$/', 'unique:students,student_number'],
             'course' => ['required', 'string', Rule::in(['BSIT'])],
             'year_level' => ['required', 'integer', Rule::in([3])],
             'email_username' => ['required', 'string', 'max:64', 'regex:/^[a-z0-9._%+-]+$/'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ], [
+            'student_number.regex' => 'Student number must follow the format 22-LN-1234: two digits, campus code, then four digits.',
         ]);
 
         if (User::whereRaw('LOWER(name) = ?', [Str::lower($request->name)])->exists()) {
@@ -116,7 +118,7 @@ class StudentController extends Controller
             'student_number' => [
                 'required',
                 'string',
-                'max:255',
+                'regex:/^\d{2}-[A-Z]{2}-\d{4}$/',
                 Rule::unique('students', 'student_number')->ignore($student->id),
             ],
             'course' => ['required', 'string', Rule::in(['BSIT'])],
@@ -131,6 +133,8 @@ class StudentController extends Controller
                 Rule::unique('users', 'email')->ignore($student->user_id),
             ],
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
+        ], [
+            'student_number.regex' => 'Student number must follow the format 22-LN-1234: two digits, campus code, then four digits.',
         ]);
 
         if (

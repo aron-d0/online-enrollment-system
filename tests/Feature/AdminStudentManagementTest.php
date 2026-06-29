@@ -67,6 +67,25 @@ class AdminStudentManagementTest extends TestCase
         ]);
     }
 
+    public function test_admin_student_number_accepts_any_two_letter_campus_code(): void
+    {
+        [$admin] = $this->makeAdminAndStudent();
+
+        $this->actingAs($admin)->post(route('students.store'), [
+            'name' => 'Campus Admin Student',
+            'student_number' => '22-ab-4321',
+            'course' => 'BSIT',
+            'year_level' => 3,
+            'email_username' => 'campusadminstudent',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ])->assertRedirect(route('students.index'));
+
+        $this->assertDatabaseHas('students', [
+            'student_number' => '22-AB-4321',
+        ]);
+    }
+
     public function test_admin_can_update_linked_user_and_student_records(): void
     {
         [$admin, $student] = $this->makeAdminAndStudent();

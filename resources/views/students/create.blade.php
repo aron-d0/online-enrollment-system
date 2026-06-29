@@ -55,6 +55,9 @@
                     <input id="student_number" name="student_number" type="text" required
                         value="{{ old('student_number') }}"
                         placeholder="Ex. 22-LN-1234"
+                        pattern="[0-9]{2}-[A-Za-z]{2}-[0-9]{4}"
+                        maxlength="10"
+                        title="Use the format 22-LN-1234: two digits, campus code, then four digits."
                         oninput="this.value = this.value.toUpperCase()"
                         class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-900/60 px-4 py-3 text-white focus:border-blue-500 focus:ring-blue-500">
 

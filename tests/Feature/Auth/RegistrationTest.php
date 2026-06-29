@@ -115,6 +115,23 @@ class RegistrationTest extends TestCase
         ]);
     }
 
+    public function test_registration_accepts_any_two_letter_campus_code_in_student_number(): void
+    {
+        $this->post('/register', [
+            'name' => 'Campus Code Student',
+            'student_number' => '22-ab-4321',
+            'course' => 'BSIT',
+            'year_level' => 3,
+            'email_username' => 'campuscode',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ])->assertRedirect(route('register.confirmation', absolute: false));
+
+        $this->assertDatabaseHas('students', [
+            'student_number' => '22-AB-4321',
+        ]);
+    }
+
     public function test_existing_student_records_cannot_register_again(): void
     {
         $user = User::create([

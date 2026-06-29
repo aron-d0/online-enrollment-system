@@ -53,7 +53,7 @@ class RegisteredUserController extends Controller
 
         $request->validate([
             'name' => ['required', 'string', 'max:255', "regex:/^[A-Z]+(?:[ .'-][A-Z]+)*$/"],
-            'student_number' => ['required', 'string', 'regex:/^\d{2}-LN-\d{4}$/'],
+            'student_number' => ['required', 'string', 'regex:/^\d{2}-[A-Z]{2}-\d{4}$/'],
             'course' => ['required', 'string', Rule::in(['BSIT'])],
             'year_level' => ['required', 'integer', Rule::in([3])],
             'email_username' => ['required', 'string', 'max:64', 'regex:/^[a-z0-9._%+-]+$/'],
@@ -61,7 +61,7 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ], [
             'name.regex' => 'Full name may only contain letters, spaces, periods, hyphens, and apostrophes.',
-            'student_number.regex' => 'Student number must follow the format 22-LN-1234.',
+            'student_number.regex' => 'Student number must follow the format 22-LN-1234: two digits, campus code, then four digits.',
             'email_username.regex' => 'Email may only contain letters, numbers, dots, underscores, percent signs, plus signs, and hyphens before @psu.edu.ph.',
         ]);
 

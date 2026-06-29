@@ -34,9 +34,9 @@
             <x-text-input id="student_number"
                 class="block mt-2 w-full bg-slate-800 border-slate-700 text-white rounded-lg"
                 type="text" name="student_number" :value="old('student_number')" required autocomplete="off"
-                pattern="[0-9]{2}-LN-[0-9]{4}"
+                pattern="[0-9]{2}-[A-Za-z]{2}-[0-9]{4}"
                 maxlength="10"
-                title="Use the format 22-LN-1234."
+                title="Use the format 22-LN-1234: two digits, campus code, then four digits."
                 placeholder="Ex. 22-LN-1234" oninput="this.value = this.value.toUpperCase()" />
 
             <x-input-error :messages="$errors->get('student_number')" class="mt-2" />
