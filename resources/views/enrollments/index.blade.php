@@ -124,15 +124,15 @@
                 shadow-[0_20px_60px_rgba(0,0,0,.25)]"
                 data-student-enrollment-group>
 
-                <div class="flex flex-col gap-4 border-b border-white/10 bg-white/5 px-6 py-5 md:flex-row md:items-center md:justify-between">
+                <div class="grid gap-5 border-b border-white/10 bg-white/5 px-6 py-5 xl:grid-cols-[minmax(280px,1fr)_auto] xl:items-start">
 
-                    <div class="flex items-center gap-4">
+                    <div class="flex min-w-0 items-center gap-4">
 
-                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-500/15 text-purple-300">
+                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-purple-500/15 text-purple-300">
                             <i class="fa-solid fa-user-graduate"></i>
                         </div>
 
-                        <div>
+                        <div class="min-w-0">
                             <h2 class="text-xl font-bold text-white">
                                 {{ $student->user->name }}
                             </h2>
@@ -151,44 +151,52 @@
 
                     </div>
 
-                    <div class="flex flex-wrap items-center gap-2 text-sm">
+                    <div class="flex flex-col gap-3 xl:items-end">
 
-                        <span class="rounded-full bg-white/5 px-4 py-2 text-slate-300">
-                            <span data-student-count="total">{{ $studentEnrollments->count() }}</span> Subjects
-                        </span>
+                        <div class="flex flex-wrap items-center gap-2 text-sm xl:justify-end">
 
-                        <span class="rounded-full bg-cyan-500/10 px-4 py-2 text-cyan-300">
-                            {{ $studentSectionLabel }}
-                        </span>
+                            <span class="rounded-full bg-white/5 px-4 py-2 text-slate-300">
+                                <span data-student-count="total">{{ $studentEnrollments->count() }}</span> Subjects
+                            </span>
 
-                        <span class="rounded-full bg-yellow-500/10 px-4 py-2 text-yellow-300">
-                            <span data-student-count="Pending">{{ $studentEnrollments->where('status', 'Pending')->count() }}</span> Pending
-                        </span>
+                            <span class="rounded-full bg-cyan-500/10 px-4 py-2 text-cyan-300">
+                                {{ $studentSectionLabel }}
+                            </span>
 
-                        <span class="rounded-full bg-emerald-500/10 px-4 py-2 text-emerald-300">
-                            <span data-student-count="Approved">{{ $studentEnrollments->where('status', 'Approved')->count() }}</span> Approved
-                        </span>
+                            <span class="rounded-full bg-yellow-500/10 px-4 py-2 text-yellow-300">
+                                <span data-student-count="Pending">{{ $studentEnrollments->where('status', 'Pending')->count() }}</span> Pending
+                            </span>
 
-                        <span class="rounded-full bg-red-500/10 px-4 py-2 text-red-300">
-                            <span data-student-count="Rejected">{{ $studentEnrollments->where('status', 'Rejected')->count() }}</span> Rejected
-                        </span>
+                            <span class="rounded-full bg-emerald-500/10 px-4 py-2 text-emerald-300">
+                                <span data-student-count="Approved">{{ $studentEnrollments->where('status', 'Approved')->count() }}</span> Approved
+                            </span>
 
-                        <button type="button"
-                            data-remove-student-enrollments
-                            data-bulk-url="{{ route('enrollments.bulk-destroy') }}"
-                            class="rounded-full border border-red-500/20 bg-red-500/10 px-4 py-2 font-semibold text-red-300 transition hover:bg-red-500/20">
-                            <i class="fa-solid fa-trash mr-2"></i>
-                            Remove Student Enrollment
-                        </button>
+                            <span class="rounded-full bg-red-500/10 px-4 py-2 text-red-300">
+                                <span data-student-count="Rejected">{{ $studentEnrollments->where('status', 'Rejected')->count() }}</span> Rejected
+                            </span>
 
-                        <button type="button"
-                            data-enrollment-toggle
-                            aria-expanded="false"
-                            title="Expand subjects"
-                            aria-label="Expand subjects for {{ $student->user->name }}"
-                            class="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-300 transition hover:bg-white/10">
-                            <i class="fa-solid fa-chevron-up rotate-180 transition-transform duration-200" data-toggle-icon></i>
-                        </button>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-2 xl:justify-end">
+
+                            <button type="button"
+                                data-remove-student-enrollments
+                                data-bulk-url="{{ route('enrollments.bulk-destroy') }}"
+                                class="rounded-full border border-red-500/20 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-300 transition hover:bg-red-500/20">
+                                <i class="fa-solid fa-trash mr-2"></i>
+                                Remove Student Enrollment
+                            </button>
+
+                            <button type="button"
+                                data-enrollment-toggle
+                                aria-expanded="false"
+                                title="Expand subjects"
+                                aria-label="Expand subjects for {{ $student->user->name }}"
+                                class="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-300 transition hover:bg-white/10">
+                                <i class="fa-solid fa-chevron-up rotate-180 transition-transform duration-200" data-toggle-icon></i>
+                            </button>
+
+                        </div>
 
                     </div>
 
