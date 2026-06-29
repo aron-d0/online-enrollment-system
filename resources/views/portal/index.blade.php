@@ -386,7 +386,10 @@ rounded-[32px] p-6 mb-8">
 <form method="POST" action="{{ route('enroll.store') }}"
     data-confirm-title="Finalize Enrollment"
     data-confirm-message="Are you sure you want to finalize enrollment?"
-    data-confirm-button="Finalize">
+    data-confirm-button="Finalize"
+    data-enrollment-form
+    data-section-loaded="{{ request('section_id') ? 'true' : 'false' }}"
+    data-subject-count="{{ count($subjects) }}">
 
     @csrf
 
@@ -442,7 +445,7 @@ rounded-[32px] p-6 mb-8">
 
             <tbody>
 
-                @foreach($subjects as $subject)
+                @forelse($subjects as $subject)
 
                     <tr class="border-b border-white/5 hover:bg-white/5">
 
@@ -488,7 +491,27 @@ rounded-[32px] p-6 mb-8">
 
                     </tr>
 
-                @endforeach
+                @empty
+
+                    <tr>
+
+                        <td colspan="8" class="px-6 py-12 text-center text-slate-500">
+
+                            @if(request('section_id'))
+
+                                No subjects found for this section.
+
+                            @else
+
+                                No section loaded yet. Select a section first, then load its subjects.
+
+                            @endif
+
+                        </td>
+
+                    </tr>
+
+                @endforelse
 
             </tbody>
 
@@ -526,4 +549,36 @@ rounded-[32px] p-6 mb-8">
     </div>
 
 </form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const enrollmentForm = document.querySelector('[data-enrollment-form]');
+
+        if (!enrollmentForm) {
+            return;
+        }
+
+        enrollmentForm.addEventListener('submit', async (event) => {
+            const sectionLoaded = enrollmentForm.dataset.sectionLoaded === 'true';
+            const subjectCount = Number(enrollmentForm.dataset.subjectCount || 0);
+
+            if (sectionLoaded && subjectCount > 0) {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            if (typeof window.confirmAction === 'function') {
+                await window.confirmAction({
+                    title: sectionLoaded ? 'No Subjects Available' : 'No Section Loaded Yet',
+                    message: sectionLoaded
+                        ? 'This section has no subjects available to finalize. Please choose another section or ask an admin to add subjects.'
+                        : 'Please select a section and click Load Subjects before finalizing enrollment.',
+                    confirmText: 'Got it',
+                });
+            }
+        }, true);
+    });
+</script>
 </x-layout>

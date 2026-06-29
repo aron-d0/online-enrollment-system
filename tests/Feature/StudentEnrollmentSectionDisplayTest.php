@@ -80,6 +80,17 @@ class StudentEnrollmentSectionDisplayTest extends TestCase
         ]);
     }
 
+    public function test_student_portal_prompts_for_section_before_finalizing(): void
+    {
+        [$user] = $this->makeStudentSectionAndSubject();
+
+        $this->actingAs($user)
+            ->get(route('portal'))
+            ->assertOk()
+            ->assertSee('No section loaded yet. Select a section first, then load its subjects.')
+            ->assertSee('No Section Loaded Yet');
+    }
+
     /**
      * @return array{0: User, 1: Student, 2: Section, 3: Subject}
      */
