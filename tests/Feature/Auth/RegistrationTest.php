@@ -98,6 +98,23 @@ class RegistrationTest extends TestCase
         ])->assertSessionHasErrors('year_level');
     }
 
+    public function test_registration_requires_expected_name_student_number_and_email_formats(): void
+    {
+        $this->post('/register', [
+            'name' => 'Student 123',
+            'student_number' => '22LN9999',
+            'course' => 'BSIT',
+            'year_level' => 3,
+            'email_username' => 'bad@email',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ])->assertSessionHasErrors([
+            'name',
+            'student_number',
+            'email_username',
+        ]);
+    }
+
     public function test_existing_student_records_cannot_register_again(): void
     {
         $user = User::create([
@@ -139,6 +156,54 @@ class RegistrationTest extends TestCase
             'course' => 'BSIT',
             'year_level' => 3,
             'email_username' => 'existing',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ])->assertSessionHasErrors('email');
+    }
+
+    public function test_duplicate_checks_are_case_insensitive_after_normalization(): void
+    {
+        $user = User::create([
+            'name' => 'CASE TEST STUDENT',
+            'email' => 'casetest@psu.edu.ph',
+            'password' => Hash::make('password'),
+        ]);
+
+        Student::create([
+            'user_id' => $user->id,
+            'student_number' => '22-LN-1234',
+            'course' => 'BSIT',
+            'year_level' => 3,
+        ]);
+
+        $this->post('/register', [
+            'name' => 'Case Test Student',
+            'student_number' => '22-ln-1234',
+            'course' => 'BSIT',
+            'year_level' => 3,
+            'email_username' => 'CaseTest',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ])->assertSessionHasErrors([
+            'name',
+        ]);
+
+        $this->post('/register', [
+            'name' => 'ANOTHER STUDENT',
+            'student_number' => '22-ln-1234',
+            'course' => 'BSIT',
+            'year_level' => 3,
+            'email_username' => 'anotherstudent',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ])->assertSessionHasErrors('student_number');
+
+        $this->post('/register', [
+            'name' => 'YET ANOTHER STUDENT',
+            'student_number' => '22-LN-1235',
+            'course' => 'BSIT',
+            'year_level' => 3,
+            'email_username' => 'CaseTest',
             'password' => 'password',
             'password_confirmation' => 'password',
         ])->assertSessionHasErrors('email');

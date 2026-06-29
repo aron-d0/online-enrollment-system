@@ -21,6 +21,8 @@
 
             <x-text-input id="name" class="block mt-2 w-full bg-slate-800 border-slate-700 text-white rounded-lg"
                 type="text" name="name" :value="old('name')" required autofocus autocomplete="name"
+                pattern="[A-Za-z .'\-]+"
+                title="Use letters, spaces, periods, hyphens, and apostrophes only."
                 placeholder="Ex. JUAN DELA CRUZ" oninput="this.value = this.value.toUpperCase()" />
 
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
@@ -32,6 +34,9 @@
             <x-text-input id="student_number"
                 class="block mt-2 w-full bg-slate-800 border-slate-700 text-white rounded-lg"
                 type="text" name="student_number" :value="old('student_number')" required autocomplete="off"
+                pattern="[0-9]{2}-LN-[0-9]{4}"
+                maxlength="10"
+                title="Use the format 22-LN-1234."
                 placeholder="Ex. 22-LN-1234" oninput="this.value = this.value.toUpperCase()" />
 
             <x-input-error :messages="$errors->get('student_number')" class="mt-2" />
@@ -79,7 +84,11 @@
             <div class="mt-2 flex rounded-lg shadow-sm">
                 <x-text-input id="email"
                     class="block w-full rounded-r-none bg-slate-800 border-slate-700 text-white"
-                    type="text" name="email_username" :value="old('email_username')" required autocomplete="username" />
+                    type="text" name="email_username" :value="old('email_username')" required autocomplete="username"
+                    maxlength="64"
+                    pattern="[a-zA-Z0-9._%+\-]+"
+                    title="Enter only the part before @psu.edu.ph. Do not include @psu.edu.ph."
+                    oninput="this.value = this.value.toLowerCase().replace('@psu.edu.ph', '').replace('@', '')" />
 
                 <span
                     class="inline-flex items-center rounded-r-lg border border-l-0 border-slate-700 bg-slate-700 px-4 text-sm text-slate-200">
@@ -96,6 +105,7 @@
 
             <x-text-input id="password" class="block mt-2 w-full bg-slate-800 border-slate-700 text-white rounded-lg"
                 type="password" name="password" required autocomplete="new-password"
+                minlength="8"
                 placeholder="At least 8 characters" />
 
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
@@ -106,7 +116,8 @@
 
             <x-text-input id="password_confirmation"
                 class="block mt-2 w-full bg-slate-800 border-slate-700 text-white rounded-lg" type="password"
-                name="password_confirmation" required autocomplete="new-password" />
+                name="password_confirmation" required autocomplete="new-password"
+                minlength="8" />
 
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>

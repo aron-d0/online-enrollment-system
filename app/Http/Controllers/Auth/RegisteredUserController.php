@@ -52,18 +52,34 @@ class RegisteredUserController extends Controller
         ]);
 
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'student_number' => ['required', 'string', 'max:255', 'unique:'.Student::class],
+            'name' => ['required', 'string', 'max:255', "regex:/^[A-Z]+(?:[ .'-][A-Z]+)*$/"],
+            'student_number' => ['required', 'string', 'regex:/^\d{2}-LN-\d{4}$/'],
             'course' => ['required', 'string', Rule::in(['BSIT'])],
             'year_level' => ['required', 'integer', Rule::in([3])],
             'email_username' => ['required', 'string', 'max:64', 'regex:/^[a-z0-9._%+-]+$/'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ], [
+            'name.regex' => 'Full name may only contain letters, spaces, periods, hyphens, and apostrophes.',
+            'student_number.regex' => 'Student number must follow the format 22-LN-1234.',
+            'email_username.regex' => 'Email may only contain letters, numbers, dots, underscores, percent signs, plus signs, and hyphens before @psu.edu.ph.',
         ]);
 
         if (User::whereRaw('LOWER(name) = ?', [Str::lower($request->name)])->exists()) {
             throw ValidationException::withMessages([
                 'name' => 'An account with this name already exists.',
+            ]);
+        }
+
+        if (Student::whereRaw('UPPER(student_number) = ?', [$request->student_number])->exists()) {
+            throw ValidationException::withMessages([
+                'student_number' => 'An account with this student number already exists.',
+            ]);
+        }
+
+        if (User::whereRaw('LOWER(email) = ?', [$request->email])->exists()) {
+            throw ValidationException::withMessages([
+                'email' => 'An account with this email already exists.',
             ]);
         }
 
