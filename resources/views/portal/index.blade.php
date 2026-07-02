@@ -648,6 +648,13 @@ rounded-[32px] p-6 mb-8">
                     : emptySubjectsRow('No subjects found for this section.');
 
                 history.replaceState({}, '', `${window.location.pathname}?section_id=${encodeURIComponent(sectionId)}`);
+
+                requestAnimationFrame(() => {
+                    window.scrollTo({
+                        top: document.documentElement.scrollHeight,
+                        behavior: 'smooth',
+                    });
+                });
             } catch (error) {
                 subjectsTableBody.innerHTML = emptySubjectsRow('Unable to load subjects. Please try again.');
             } finally {
