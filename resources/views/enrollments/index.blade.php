@@ -180,8 +180,8 @@
                         <div class="flex flex-wrap items-center gap-2 xl:justify-end">
 
                             <button type="button"
-                                data-remove-student-enrollments
-                                data-bulk-url="{{ route('enrollments.bulk-destroy') }}"
+                            data-remove-student-enrollments
+                            data-bulk-url="{{ route('enrollments.bulk-destroy', absolute: false) }}"
                                 class="rounded-full border border-red-500/20 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-300 transition hover:bg-red-500/20">
                                 <i class="fa-solid fa-trash mr-2"></i>
                                 Remove Student Enrollment
@@ -214,7 +214,7 @@
 
                         <button type="button"
                             data-bulk-action="Approved"
-                            data-bulk-url="{{ route('enrollments.bulk-status') }}"
+                            data-bulk-url="{{ route('enrollments.bulk-status', absolute: false) }}"
                             disabled
                             class="bulk-action-button h-10 px-4 rounded-full bg-emerald-500/15 border border-emerald-500/20 text-emerald-300 hover:bg-emerald-500/25 transition disabled:opacity-40 disabled:cursor-not-allowed">
                             <i class="fa-solid fa-check-double mr-2"></i>
@@ -223,7 +223,7 @@
 
                         <button type="button"
                             data-bulk-action="Rejected"
-                            data-bulk-url="{{ route('enrollments.bulk-status') }}"
+                            data-bulk-url="{{ route('enrollments.bulk-status', absolute: false) }}"
                             disabled
                             class="bulk-action-button h-10 px-4 rounded-full bg-red-500/15 border border-red-500/20 text-red-300 hover:bg-red-500/25 transition disabled:opacity-40 disabled:cursor-not-allowed">
                             <i class="fa-solid fa-xmark mr-2"></i>
@@ -232,7 +232,7 @@
 
                         <button type="button"
                             data-bulk-action="Delete"
-                            data-bulk-url="{{ route('enrollments.bulk-destroy') }}"
+                            data-bulk-url="{{ route('enrollments.bulk-destroy', absolute: false) }}"
                             disabled
                             class="bulk-action-button h-10 px-4 rounded-full bg-slate-700/50 border border-slate-600 text-slate-300 hover:bg-slate-600 transition disabled:opacity-40 disabled:cursor-not-allowed">
                             <i class="fa-solid fa-trash mr-2"></i>
@@ -380,7 +380,7 @@
                                                 @if($enrollment->status === 'Pending')
 
                                                     <button type="button"
-                                                        data-status-url="{{ route('enrollments.approve', $enrollment) }}"
+                                                        data-status-url="{{ route('enrollments.approve', $enrollment, absolute: false) }}"
                                                         data-status-action="Approved"
                                                         title="Approve"
                                                         aria-label="Approve {{ $enrollment->subject->code }}"
@@ -395,7 +395,7 @@
                                                     </button>
 
                                                     <button type="button"
-                                                        data-status-url="{{ route('enrollments.reject', $enrollment) }}"
+                                                        data-status-url="{{ route('enrollments.reject', $enrollment, absolute: false) }}"
                                                         data-status-action="Rejected"
                                                         title="Reject"
                                                         aria-label="Reject {{ $enrollment->subject->code }}"
@@ -414,7 +414,7 @@
                                             </div>
 
                                             <button type="button"
-                                                data-delete-url="{{ route('enrollments.destroy', $enrollment) }}"
+                                                data-delete-url="{{ route('enrollments.destroy', $enrollment, absolute: false) }}"
                                                 title="Delete"
                                                 aria-label="Delete {{ $enrollment->subject->code }}"
                                                 class="flex h-9 w-9 items-center justify-center rounded-full

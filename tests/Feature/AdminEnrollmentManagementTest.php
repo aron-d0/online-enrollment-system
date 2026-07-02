@@ -27,6 +27,33 @@ class AdminEnrollmentManagementTest extends TestCase
         $response->assertSee($enrollment->subject->section->name);
     }
 
+    public function test_admin_enrollment_action_urls_do_not_generate_mixed_content_behind_https_proxy(): void
+    {
+        [$admin, $enrollment] = $this->makeAdminAndEnrollment();
+
+        $response = $this
+            ->withServerVariables([
+                'HTTP_HOST' => 'app.capstonewebapp.com',
+                'REMOTE_ADDR' => '127.0.0.1',
+            ])
+            ->withHeaders([
+                'X-Forwarded-Host' => 'app.capstonewebapp.com',
+                'X-Forwarded-Port' => '443',
+                'X-Forwarded-Proto' => 'https',
+            ])
+            ->actingAs($admin)
+            ->get('/admin/enrollments');
+
+        $response->assertOk();
+        $response->assertSee(
+            'data-status-url="' . route('enrollments.approve', $enrollment, absolute: false) . '"',
+            false
+        );
+        $response->assertDontSee('data-status-url="http://', false);
+        $response->assertDontSee('data-delete-url="http://', false);
+        $response->assertDontSee('data-bulk-url="http://', false);
+    }
+
     public function test_admin_can_approve_enrollment_without_page_reload_response(): void
     {
         [$admin, $enrollment] = $this->makeAdminAndEnrollment();
