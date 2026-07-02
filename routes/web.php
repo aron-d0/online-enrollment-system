@@ -40,6 +40,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/portal', [PortalController::class, 'index'])
         ->name('portal');
 
+    Route::get('/portal/sections/{section}/subjects', [PortalController::class, 'sectionSubjects'])
+        ->name('portal.sections.subjects');
+
     Route::post('/enroll', [EnrollmentController::class, 'store'])
         ->name('enroll.store');
 

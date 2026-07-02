@@ -88,7 +88,25 @@ class StudentEnrollmentSectionDisplayTest extends TestCase
             ->get(route('portal'))
             ->assertOk()
             ->assertSee('No section loaded yet. Select a section first, then load its subjects.')
-            ->assertSee('No Section Loaded Yet');
+            ->assertSee('No Section Loaded Yet')
+            ->assertSee('data-section-loader', false)
+            ->assertSee('data-subjects-table-body', false);
+    }
+
+    public function test_student_can_load_section_subjects_as_json_without_full_page_reload(): void
+    {
+        [$user, , $section, $subject] = $this->makeStudentSectionAndSubject();
+
+        $this->actingAs($user)
+            ->getJson(route('portal.sections.subjects', $section))
+            ->assertOk()
+            ->assertJsonPath('section.id', $section->id)
+            ->assertJsonPath('section.name', $section->name)
+            ->assertJsonPath('subjects.0.id', $subject->id)
+            ->assertJsonPath('subjects.0.code', $subject->code)
+            ->assertJsonPath('subjects.0.title', $subject->title)
+            ->assertJsonPath('subjects.0.time_from', '8:00 AM')
+            ->assertJsonPath('subjects.0.time_to', '10:00 AM');
     }
 
     /**

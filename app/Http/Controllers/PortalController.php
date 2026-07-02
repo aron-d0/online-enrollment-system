@@ -66,4 +66,29 @@ class PortalController extends Controller
             'enrolledTermLabel'
         ));
     }
+
+    public function sectionSubjects(Section $section)
+    {
+        $subjects = Subject::where('section_id', $section->id)
+            ->orderBy('code')
+            ->get()
+            ->map(fn (Subject $subject): array => [
+                'id' => $subject->id,
+                'code' => $subject->code,
+                'title' => $subject->title,
+                'units' => $subject->units,
+                'time_from' => $subject->timeFromForDisplay(),
+                'time_to' => $subject->timeToForDisplay(),
+                'days' => $subject->days ?: '—',
+                'room' => $subject->room ?: '—',
+            ]);
+
+        return response()->json([
+            'section' => [
+                'id' => $section->id,
+                'name' => $section->name,
+            ],
+            'subjects' => $subjects,
+        ]);
+    }
 }

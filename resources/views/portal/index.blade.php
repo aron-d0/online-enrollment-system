@@ -339,7 +339,9 @@ rounded-[32px] p-8 mb-8">
 rounded-[32px] p-6 mb-8">
 
     <form method="GET" action="{{ route('portal') }}"
-        class="flex flex-col md:flex-row items-center gap-4">
+        class="flex flex-col md:flex-row items-center gap-4"
+        data-section-loader
+        data-subjects-url-template="/portal/sections/__SECTION__/subjects">
 
         <label class="text-slate-300 font-medium">
 
@@ -348,6 +350,7 @@ rounded-[32px] p-6 mb-8">
         </label>
 
         <select name="section_id"
+            data-section-select
             class="flex-1 bg-slate-800 border border-slate-700
             text-white rounded-2xl px-4 py-3">
 
@@ -369,6 +372,7 @@ rounded-[32px] p-6 mb-8">
         </select>
 
         <button type="submit"
+            data-load-section-button
             class="px-6 py-3 rounded-2xl
             bg-blue-600 hover:bg-blue-700
             text-white font-semibold transition">
@@ -388,6 +392,7 @@ rounded-[32px] p-6 mb-8">
     data-confirm-message="Are you sure you want to finalize enrollment?"
     data-confirm-button="Finalize"
     data-enrollment-form
+    data-is-enrolled="{{ $isEnrolled ? 'true' : 'false' }}"
     data-section-loaded="{{ request('section_id') ? 'true' : 'false' }}"
     data-subject-count="{{ count($subjects) }}">
 
@@ -395,7 +400,8 @@ rounded-[32px] p-6 mb-8">
 
     <input type="hidden"
         name="section_id"
-        value="{{ request('section_id') }}">
+        value="{{ request('section_id') }}"
+        data-selected-section-input>
 
     <div class="overflow-hidden rounded-[32px]
     bg-white/5 backdrop-blur-2xl
@@ -443,7 +449,7 @@ rounded-[32px] p-6 mb-8">
 
             </thead>
 
-            <tbody>
+            <tbody data-subjects-table-body>
 
                 @forelse($subjects as $subject)
 
@@ -495,7 +501,7 @@ rounded-[32px] p-6 mb-8">
 
                     <tr>
 
-                        <td colspan="8" class="px-6 py-12 text-center text-slate-500">
+                        <td colspan="8" class="px-6 py-12 text-center text-slate-500" data-subjects-empty-message>
 
                             @if(request('section_id'))
 
@@ -553,10 +559,102 @@ rounded-[32px] p-6 mb-8">
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const enrollmentForm = document.querySelector('[data-enrollment-form]');
+        const sectionLoader = document.querySelector('[data-section-loader]');
+        const sectionSelect = document.querySelector('[data-section-select]');
+        const loadSectionButton = document.querySelector('[data-load-section-button]');
+        const selectedSectionInput = document.querySelector('[data-selected-section-input]');
+        const subjectsTableBody = document.querySelector('[data-subjects-table-body]');
 
         if (!enrollmentForm) {
             return;
         }
+
+        const escapeHtml = (value) => String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+
+        const emptySubjectsRow = (message) => `
+            <tr>
+                <td colspan="8" class="px-6 py-12 text-center text-slate-500" data-subjects-empty-message>
+                    ${escapeHtml(message)}
+                </td>
+            </tr>
+        `;
+
+        const subjectRow = (subject, isEnrolled) => `
+            <tr class="border-b border-white/5 hover:bg-white/5">
+                <td class="px-6 py-4">
+                    <input
+                        type="checkbox"
+                        name="subjects[]"
+                        value="${escapeHtml(subject.id)}"
+                        checked
+                        ${isEnrolled ? 'disabled' : ''}
+                        class="w-5 h-5 rounded">
+                </td>
+                <td class="px-6 py-4 text-cyan-300">${escapeHtml(subject.code)}</td>
+                <td class="px-6 py-4 text-white">${escapeHtml(subject.title)}</td>
+                <td class="px-6 py-4 text-slate-300">${escapeHtml(subject.units)}</td>
+                <td class="px-6 py-4 text-slate-300">${escapeHtml(subject.time_from)}</td>
+                <td class="px-6 py-4 text-slate-300">${escapeHtml(subject.time_to)}</td>
+                <td class="px-6 py-4 text-slate-300">${escapeHtml(subject.days)}</td>
+                <td class="px-6 py-4 text-slate-300">${escapeHtml(subject.room)}</td>
+            </tr>
+        `;
+
+        sectionLoader?.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const sectionId = sectionSelect?.value;
+
+            if (!sectionId) {
+                enrollmentForm.dataset.sectionLoaded = 'false';
+                enrollmentForm.dataset.subjectCount = '0';
+                selectedSectionInput.value = '';
+                subjectsTableBody.innerHTML = emptySubjectsRow('No section loaded yet. Select a section first, then load its subjects.');
+                history.replaceState({}, '', window.location.pathname);
+                return;
+            }
+
+            const originalButtonText = loadSectionButton.textContent;
+            loadSectionButton.disabled = true;
+            loadSectionButton.textContent = 'Loading...';
+
+            try {
+                const url = sectionLoader.dataset.subjectsUrlTemplate.replace('__SECTION__', encodeURIComponent(sectionId));
+                const response = await fetch(url, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Request failed');
+                }
+
+                const payload = await response.json();
+                const subjects = payload.subjects ?? [];
+                const isEnrolled = enrollmentForm.dataset.isEnrolled === 'true';
+
+                enrollmentForm.dataset.sectionLoaded = 'true';
+                enrollmentForm.dataset.subjectCount = subjects.length.toString();
+                selectedSectionInput.value = sectionId;
+                subjectsTableBody.innerHTML = subjects.length
+                    ? subjects.map((subject) => subjectRow(subject, isEnrolled)).join('')
+                    : emptySubjectsRow('No subjects found for this section.');
+
+                history.replaceState({}, '', `${window.location.pathname}?section_id=${encodeURIComponent(sectionId)}`);
+            } catch (error) {
+                subjectsTableBody.innerHTML = emptySubjectsRow('Unable to load subjects. Please try again.');
+            } finally {
+                loadSectionButton.disabled = false;
+                loadSectionButton.textContent = originalButtonText;
+            }
+        });
 
         enrollmentForm.addEventListener('submit', async (event) => {
             const sectionLoaded = enrollmentForm.dataset.sectionLoaded === 'true';
