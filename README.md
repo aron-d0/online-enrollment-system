@@ -4,6 +4,8 @@
 
 The Online Enrollment System is a web-based application developed using Laravel Framework and SQLite Database. The system allows students to enroll in subjects online while providing administrators with tools to manage students, sections, subjects, and enrollment records.
 
+The repository includes deployment-ready setup and documentation for project demonstration.
+
 ## Features
 
 ### Student Module
